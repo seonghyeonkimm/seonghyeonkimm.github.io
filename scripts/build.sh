@@ -5,7 +5,8 @@ npm run clean
 npm run build
 
 # Update Docs folder
-mv public docs
+rm -rf dist
+mv public dist
 
 # Clean again
 npm run clean

@@ -1,2 +1,2 @@
 # docs folder push to master branch
-git subtree push --prefix docs/ origin master
+git subtree push --prefix dist/ origin master
