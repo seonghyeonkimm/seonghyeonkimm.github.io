@@ -1,12 +1,14 @@
 {
   "name": "seonghyeon-blog",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "develop": "gatsby develop",
     "start": "gatsby develop",
     "build": "gatsby build",
-    "clean": "gatsby clean"
+    "clean": "gatsby clean",
+    "predeploy": "./scripts/build.sh",
+    "deploy": "./scripts/deploy.sh"
   },
   "dependencies": {
     "gatsby": "^2.18.12",

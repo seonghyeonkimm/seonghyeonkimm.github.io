@@ -9,3 +9,6 @@ mv public docs
 
 # Clean again
 npm run clean
+
+# git add and commit
+git add . && git commit
