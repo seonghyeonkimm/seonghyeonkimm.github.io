@@ -11,4 +11,4 @@ mv public docs
 npm run clean
 
 # git add and commit
-git add . && git commit
+git add . && git commit && git push
