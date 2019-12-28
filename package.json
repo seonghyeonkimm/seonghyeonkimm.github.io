@@ -1,7 +1,7 @@
 {
   "name": "seonghyeon-blog",
   "private": true,
-  "version": "1.0.3",
+  "version": "1.0.4",
   "scripts": {
     "develop": "gatsby develop",
     "start": "gatsby develop",
