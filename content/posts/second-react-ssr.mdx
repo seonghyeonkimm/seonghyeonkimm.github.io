@@ -1,0 +1,62 @@
+---
+title: React SSR하는 세 가지 방법 (2)
+date: 2020-01-14
+excerpt: React SSR하는 두 번째 방법으로 next.js, serverless-next.js를 활용해서 구현을 해보았다.
+---
+
+## 처음 생각했던 구현 방향
+&nbsp; next.js가 serverless target build 기능을 release한 지 그리 오래 되진 않았지만 꽤 시간이 흘렀다. 그때 당시에는 꼭 한번 사용해봐야지라는 생각만 했었다.
+그래서 이번 글을 써야 겠다라고 마음을 먹고 머릿속으로 어떻게 구현할 수 있을까 고민하기 시작했때에는 다음과 같이 구현 해야 겠다고 생각헀다. next.js page들을 lambda 함수로 build하고 api-gateway를 활용해서 각 lambda들을 call하게 해주고,
+cache는 elasticcache를 통해서 api 혹은 page를 render한 결과물을 cache하는 형태로 구성해야겠다라고 생각을 했었다.
+그런데 직접 구현 해보고 글을 써야지라고 마음을 먹고 직접 코드를 치기 시작하고 이것 저것 검색을 하다 보니 [serverless-next.js](https://github.com/danielcondemarin/serverless-next.js/tree/master/packages/serverless-nextjs-component)라는 것을 알게 되었다.
+또한 친절하게 소개되어 있는 [블로그 글](https://serverless.com/blog/serverless-nextjs/)도 있었다. 읽어 보니 이대로 실습을 해보는 것이 더 좋겠다는 생각이 들었다.
+
+## 실습한 결과물 공유 및 느낀 점
+
+> 1) nginx + react + express (with puppeteer) - [블로그 링크](https://impressor615.github.io/first-react-ssr/) <br />
+> 2) `next.js의 serverless` - [참고 repository](https://impressor615.github.io/first-react-ssr/)  <br />
+> 3) (coming soon) cloudFront + lambda@edge <br />
+
+&nbsp; 처음 생각했던 구성대로 작업하려고 했다면 aws관련한 공부도 많이 해야 했고 꽤 많은 시간을 써야할 것이라고 예상 했었다.
+그런데 실제로 serverless에서 소개되고 있는 블로그 글을 기반으로 하다 보니 실제 작업이 생각보다 빨리 끝났다. 파일들을 거의 기본 next.js application과 serverless-next.js에서 필요한 config 파일 정도 뿐이다.
+그래서 코드에 대한 이야기는 크게 하지 않아도 될 것 같고 serverless-next.js가 해주는 전체적인 구조와 관련된 생각 정도만 정리해 보려고 한다.
+글의 초입부와 글의 마지막에 공유한 blog글에 serverless-next.js에서 구성해주는 구조를 잘 그려 두었다. 해당 이미지를 아래로 옮겨 와 보았다.
+
+![second-react-ssr-diagram](https://s3-us-west-2.amazonaws.com/assets.blog.serverless.com/serverless-nextjs/serverless_nextjs_lambda_edge_aws_architecture.png)
+
+&nbsp; 위의 그림을 간단히만 글로 설명한디면, user가 도메인을 입력하게 되면 cloudFront로 요청이 전달되고 build assets, user assets은 바로 s3로 전달 되어 파일이 return된다. 그 이외의 정적인 `.html`로
+만들어 진 페이지, `/manifest.json`, `/robot.txt`와 같은 public assest, 그리고 `ssr이 필요한 page`에 대한 요청과 `api 요청`은 `lambda@edge로 전달되어 각 요청에 맞게 처리되어 return`된다.
+public asset이나 getInitialProps가 사용되지 않아서 `.html파일로 만들어진 파일도 lambda를 통한 다는 것이 마음에 들지 않았고 굳이 그럴 필요가 있나 생각이 들었다. 역시는 역시. 이유가 있었다.`
+cloudFront에서 cache에 대한 rule을 최대 25개까지만 만들 수 있기 때문이었다. 이 부분만 해결할 수 있는 방법이 있다면 훨씬 좋겠다라는 생각을 했다. 아쉬웠다.
+
+&nbsp; 다음으로, 중요 하기도 하고 주목할 만 했던 부분이 cache와 관련된 부분이었다. `SSR을 하게 되면 api 요청에 대한 결과를 받고 page를 render하고 내리는 과정이 동반 되기 때문에
+SPA처럼 단순히 index.html을 받는 과정보다 보통 오래 걸린다. 그래서 cache를 잘하는 것이 앱의 퍼포먼스에 굉장히 지대한 영향을 끼친다.`
+serverless-next.js는 크게는 두 가지 기본 cache 정책을 가지고 있다. `첫 번째로, build assets, user assets은 hash값과 함께 파일 이름이 생성되기 때문에 cache TTL이 max값으로 설정` 되어 있다.
+`두 번째로 page에 대한 요청 및 api 요청과 관련 되어 있는 lambda에 대한 cache 정책은 직접 변경 하지 않는 다면 기본적으로는 cache를 하지 않는다.`
+
+&nbsp; api lambda, page lambda에 대한 cache 정책에 대해서는 스스로 좀 더 신경써야 할 부분이라고 생각이 든다. (더 좋은 방법이 있는 지는 아직 모르겠지만) 기본 설정을 가지고 계속 작업 하기 보다는
+`page에 대한 요청과 api에 대한 요청도 예를 들어서 1시간 정도는 최소한 cache하도록 설정을 변경하여 사용하는 것이 바람직하지 않을까 싶다.` 그리고 배포하거나 혹은 `cache invalidate가 필요할 때에는 cloudFront의 invalidation 기능을 사용 한다면
+앱 성능면에 있어서 훨씬 도움이 될 거라는 생각이 들었다.` 물론 cache를 할 때에 로그인 여부, device, language등과 관련하여 `api data나 page가 변경될 소지가 있는 부분에 대해서는 잘 고려 하여 cache 정책을 세워야 한다.`
+물론, 실제로 서비스를 하다 보면 infra관련되어서든 application관련 되어서든 분명히 더 많은 문제들을 마주하게 되겠지만, 실습 하면서 느꼈던 점은 이 정도이다.
+
+## 스스로 생각해보는 장단점 및 결론
+
+&nbsp; 위에 적었던 내용들을 토대로 장단점을 간단히 정리해보면 다음과 같다.
+
+#### 장점
+* react SSR하면 next.js이다. react에서 공식적으로 추천 하고 있다.
+* next.js팀이 진짜 열심히 일한다. 개선의 체감속도 진짜 빠르다.
+* serverless라는 점에서 infra관리에 있어서 직접 서버를 띄우는 것보다 traffic관리에 있어서 좀 덜 신경써도 된다.
+
+#### 단점
+* lambda도 결국은 서버다. 많은 traffic이 몰릴 경우에 동시 처리의 수에 제한이 있다. (물론 해결할 수 있는 방법이야 있다.) 그러므로 직접 instance를 관리하는 것보다는 적을 수 있지만 infra에 대한 관리가 여전히 필요하다.
+* SPA라면 굳이 server로 traffic을 전달하지 않아도 되는 `/*.html`, `/robots.txt`등의 static한 파일도 lambda를 통해야 한다.
+* cache가 필요하고 고려할 것들이 꽤 많다. 실제로 user와 bot이 사용하는 결과물이 일치하므로, cache할 때에 신경써야 할 것이 좀 더 많다. 예를 들면 user의 language, device, 로그인 여부들을 서버 측에서 확인할 경우 예기치 못한 에러를 만날 수 있다.
+
+&nbsp; 결론적으로, `개인적인 생각으로 SSR이 필요하고 cloudFront를 사용하여 서비스할 수 있는 상황이라면 사용을 고려 해보아도 좋다는 생각이 든다.`
+직접 infra를 구현하는 것보다 훨씬 간편하다. 물론, 이미 infra관리에 익숙한 사람이라면 말이 다르겠지만.
+다만 또 단점과 보완이 필요한 문제들도 있기 때문에 그런 부분에 대한 고려와 방안들을 갖추고 있다면 더할 나위 없이 좋은 선택이 될 수도 있다고 생각한다.
+
+## 참고한 글
+- https://nextjs.org/
+- https://serverless.com/blog/serverless-nextjs/
