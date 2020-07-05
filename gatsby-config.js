@@ -17,7 +17,7 @@ module.exports = {
       },
       {
         name: `github`,
-        url: `https://github.com/impressor615`,
+        url: `https://github.com/seonghyeonkimm`,
       },
     ],
   },
