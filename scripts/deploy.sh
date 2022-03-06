@@ -12,4 +12,4 @@ mv public docs
 npm run clean
 
 ## push to github
-git add . && git push origin main
+git add . && git commit -m "deploy" && git push origin main
