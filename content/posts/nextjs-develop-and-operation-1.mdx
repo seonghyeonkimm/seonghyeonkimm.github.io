@@ -1,0 +1,122 @@
+---
+title: nextjs 서비스 개발부터 운영까지
+date: 2021-12-18
+excerpt: nextjs로 지금 현재 커머스를 개발하고 있습니다. 그런데 어쩌다보니 많은 부분에 있어서 직접 셋업하는 과정에 참여했고, 그 과정에서 배웠던 내용들을 팀원들에게 공유하고자 다음 글을 기획했습니다.
+---
+
+&nbsp;nextjs로 지금 현재 커머스를 개발하고 있습니다. `그런데 어쩌다보니 많은 부분에 있어서 직접 셋업하는 과정에 참여했고, 그 과정에서 배웠던 내용들을 팀원들에게 공유하고자 다음 글을 기획했습니다.` 실제로 나중에는 어떻게 구성들이 추가될지 삭제될지 모르곘지만 아래와 같은 구성으로 몇개의 글을 작성해보려고 합니다. 긴 글을 다 읽기 귀찮으신 분들을 위해서 핵심 내용들만을 `강조`해두려고 최대한 노력했습니다. 시간이 부족하신 분들은 강조해둔 영역만 읽으셔도 충분할 것이라고 생각합니다.
+
+- [Part 1 - nextjs 서비스 아키텍처]()
+- [Part 2 - nextjs 서비스 개발 경험 및 트러블슈팅]()
+- Part 3 - nextjs 서비스 프러덕션 운영기 (Comming soon..)
+
+# Part 1 - nextjs 서비스 아키텍처
+
+&nbsp;처음 글의 주제는 어떤 논의 및 의사결정 과정을 거쳐서 어떤 서비스 아키텍처를 구성하기로 결정했었는지에 대해서 공유하고 서비스 아키텍처를 구성하면서 어떤 요소들에 대한 이해와 공부가 필요했고, 어떤 트러블슈팅 등을 겪었는지에 대해서 적어 보겠습니다. 사실 이 글을 쓰기 시작하면서 얼마나 자세히 써야할까 고민을 했습니다. 결론적으로는 작성하면서 스스로도 어느 정도까지 이해하고 있는지에 대해서도 점검하면 좋겠다는 생각이 들었고, `최대한 자세하게 풀어서 적어 보면서 프론트엔드 개발자들 중에서 아직 SSR Framework에 대한 경험이 거의 없는 개발자들도 이해할 수 있도록 nextjs와 서비스 인프라 관련된 내용들에 있어서 어떤 역할을 하는 것이고 어떻게 사용되는 것인지에 대해서도 최대한 자세히 적어보기로 생각했습니다.`
+
+## 목차
+- [nextjs는 무엇에 쓰는 물건인가?](#nextjs는-무엇에-쓰는-물건인가)
+- [nextjs 서비스 아키텍처](#nextjs-서비스-아키텍처)
+- [nextjs 서비스 배포하기](#nextjs-서비스-배포하기)
+- [nextjs 서비스 모니터링](#nextjs-서비스-모니터링)
+- [nextjs 서비스 아키텍처 구성 중 트러블슈팅](#nextjs-서비스-아키텍처-구성-중-트러블슈팅)
+
+## nextjs는 무엇에 쓰는 물건인가?
+&nbsp; React로 개발할 때에 SPA로 접근하는게 대부분이었습니다. 그래서 `SSR을 해야 하는 경우에만 nextjs를 찾았던 것으로 기억합니다. SEO에 대한 대응이 필요한 서비스 혹은 페이지를 만들어야 되는데 어떤 framework를 사용해야하지라는 질문을 할 때 보통 떠올리던 것이 nextjs였습니다.` 그렇지만, 지금 현재 nextjs는 **next export**를 통해서 서버 없이 동작할 수 있도록 **SSG(Static Site Generation)**을 지원하기도 하고, next 서버를 띄운다고 하더라도 html을 서빙하더라도 항상 매번 html을 생성해서 response를 해주는 것이 아니고 미리 빌드 시에 pre-rendering을 하여 특정 페이지는 html을 파일을 서빙하기도 하고 getServerSideProps API를 통해서 그때그때 Server에서 만들어지는 형태의 페이지를 섞어서 사용할 수도 있습니다. 그래서 지금 [공식 사이트](https://nextjs.org/)에 들어가게 되면 `SSR을 전면에 내세운 것이 아니라 The React Framework For Production이라는 문구로 소개하고 있고 SSR만을 위한 것이 아니라 React를 사용해서 Application을 개발할 때에 언제든지 사용할 수 있는 프레임워크`라고 생각하는 것이 맞을 것 같습니다. 또한 nextjs를 개발하고 운영을 [Vercel](https://vercel.com/)이라는 회사가 하고 있는데 굉장히 업데이트도 빠르게 되고 React Core Team, Google Chrome Team과 협업을 통해서 앞으로 미래의 웹 개발에 있어서 많은 부분들을 주도하고 있다고 느끼고 있습니다.
+
+![nextjs-introduction](https://user-images.githubusercontent.com/13966404/146634039-e27383f8-4190-4c99-a8d4-af7bdc05ec09.png)
+
+&nbsp;특히 제가 엄청 경험이 많지는 않지만 `최근까지도 왠만하면 그냥 SPA로 개발하는게 훨씬 이득이 많지 않을까` 생각했었습니다. 왜냐하면 SSR을 떠올리던 첫 번째 이유였던 SEO도 Google 검색엔진의 경우에는 SPA를 알아서 로드해서 정보들을 가져갈 수 있고 검색엔진에 노출될 수 있다고 하기도 하고 실제 서버를 띄우는 것보다 SPA로 개발하면 인프라 운영 코스트 등 많은 것들이 월등히 쉽고 편리하기도 하기 때문입니다. 그런데 최근의 흐름을 보면 nextjs를 사용하는 회사들도 많아지고 [Remix](https://remix.run/)와 같은 SSR Framework도 나오면서 인기도 많이 얻고 있는 것으로 봐서 조금은 더 이쪽에 관심을 가져야 할 것 같다고 생각하고 있습니다. 지금 개인적으로 생각하기에 nextjs나 remix와 같은 프레임워크의 사용을 고려해야하는 경우를 생각해본다면 다음정도가 있지 않을까 생각합니다.
+
+- `비록 검색엔진들이 알아서 SPA도 알아서 체크한다고 하지만, SEO를 조금 더 잘 챙기고 싶다.`
+- `더 좋은 유저 경험을 주고 싶다. SPA나 SSR이 실제로 유저가 js까지 로드되는 시점을 생각한다면, 속도가 거의 차이가 없다고 알려져 있지만, FCP(First Content Paint)는 SSR이 훨씬 빠르기 때문에 더 좋은 유저 경험을 줄 수 있다고 생각하고 있습니다. 아무리 조금이라도 최대한 빠르게 유저에게 웹의 컨텐츠를 보여주는 것만으로도 리텐션에 꽤 많은 차이를 가져올 수 있다는 연구결과도 있기도 하니까요.`
+
+&nbsp;그리고 SPA가 SSR보다 편리했던 인프라 운영 코스트 등도 Vercel이나 Netlify나 다른 Provider들을 통해서 기술들이 발전하면서 훨씬 덜 신경쓰고 서버를 띄울 수 있고 관리할 수 있게 되었기 때문에 예전보다는 운영 코스트에 대한 걱정을 조금은 덜 해도 되지 않을까라는 생각도 듭니다. 또한 요즘 가끔 보이는 BFF([Backend For Frontend](https://docs.microsoft.com/ko-kr/azure/architecture/patterns/backends-for-frontends))와 같은 개념을 적용해보는 것도 해보고 싶다는 생각이 많이 드네요.
+
+## nextjs 서비스 아키텍처 
+
+&nbsp;처음에 nextjs로 SSR React앱을 구현 해야하는 상황에서 서비스를 어떻게 운영할 것인지에 대한 대안으로 몇 가지를 논의했었습니다. 물론 가장 쉽게 nextjs 앱을 띄우는 방법으로 vercel을 사용할 수 있지만, `회사 내부의 보안정책으로 인해서 무조건 aws 안에서만 구성을 해야만 했습니다. 아래에 적은 방법 이외에도 다른 방법들이 있겠지만 제가 아는 한도 안에서는 결국 마지막 선택사항은 아래 두 가지`였습니다.
+
+- [serverless framework](https://github.com/serverless-nextjs/serverless-next.js)
+  - cloudfront
+  - lambda@edge
+- [ECS(Elastic Container Service)](https://aws.amazon.com/ko/ecs/)
+  - fargate
+
+&nbsp;우선 서비스를 띄울 수 있는 방법은 많지만 그 중에서도 `안정적인 서비스 운영을 위해서 많은 트래픽이 몰려도 수월하게 스케일링할 수 있는 구성이 가장 중요했습니다. 그래서 aws안에서 구성할 수 있는 방법은 위의 두 가지 방법을 생각`했고, 그 중에서는 저희는 두 번째인 `ECS를 선택`했습니다. `사실 둘 중에 어떤 것이 더 우월한가에 대한 없겠지만, 우선 회사 내부에서 서버를 띄울 때 보통 두 번째 방식인 ECS를 사용하는 경우가 많았습니다.` 그러므로 제가 직접 구성하면서 여쭤볼 수 있는 분들이 있었다는 사실과 `serverless framework는 개인적으로 해본 경험이 있었기 때문에 다른 새로운 챌린지를 해보고 싶다는 욕구`도 있었습니다.
+
+&nbsp;별거 없지만, 위와 같은 이유 때문에 ECS를 사용해서 서버를 띄우기로 결정했습니다. 구체적으로 어떤 설정들을 AWS에서 구성해야 nextjs를 운영할 수 있는 인프라를 구성할 수 있는 지에 대해서 하나씩 실제로 구성을 했던 순서대로 설명을 조금 더 자세히 해보겠습니다. 실제로 인프라를 구성하기 위해서 terraform을 사용해서 구성했었지만 자세한 infra 코드보다는 각각의 구성요소가 어떤 역할을 하는지에 집중해서 작성 해보겠습니다. 자세한 설명을 하기 전에 결국 구성된 모습은 다음과 같습니다. 각 요소들을 설명하고 나서 이 그림을 다시 한 번 보겠습니다.
+
+![서비스 구성도](https://user-images.githubusercontent.com/13966404/146634044-9ad7ea15-c093-4fdb-9cbb-fd6f165b914f.png)
+
+### 1. [ECR(Elastic Container Registry)](https://aws.amazon.com/ko/ecr/) 구성하기
+&nbsp;ECS라는 이름에서도 알 수 있는 것처럼 `ECS는 Docker Container를 사용해서 서버를 띄우는 서비스이고 Docker Container를 띄우기 위해서는 Docker Image를 build하고 Docker Image를 Push하고 관리해야 합니다. Docker Image를 push하고 관리하는 서비스가 바로 ECR`입니다.
+
+### 2. [ECS(Elastic Container Service)](https://aws.amazon.com/ko/ecs/)로 서버 띄우기
+&nbsp;ECR에 Docker Image를 올려 두었다면, 그 이후에 신경 써야할 부분은 바로 `ECS를 사용해서 ECR에 올라와있는 Docker Image를 사용해서 서버를 띄우는 일`입니다. ECS가 서버를 띄우는 방법으로는 두 가지가 있는데 바로 위에서도 언급했던 **Fargate**가 있고 아니면 많이들 알고 계실 **EC2**를 사용하는 방식입니다. 저는 스케일링이 더 수월한 Fargate를 이용했습니다.
+
+&nbsp;`ECS를 이해하기 위해서는 작업 정의(Task Definition)라는 용어를 이해해야 합니다. ECS는 서버를 띄울 때에 특정 작업을 기준으로 판단하는 데 그것이 작업 정의라고 부릅니다.` 작업 정의에는 서비스를 띄울 때에 `어떤 Docker Image를 사용할지 서버의 물리적인 스펙들을 어떻게 할지 등 서비스를 띄우기에 필요한 메타 정보들을 관리하는 것이라고 생각`하시면 됩니다. 
+
+### 3. [ALB(application Load Balancer)](https://docs.aws.amazon.com/ko_kr/elasticloadbalancing/latest/application/introduction.html)
+
+&nbsp;`ALB는 ECS가 여러개의 container service를 띄웠을 때에 앞단에서 유저의 request를 받아서 request를 분배하는 역할을 합니다.` ALB를 설정할 때에 신경써야 하는 몇 가지 구성요소들이 있는데 관련해서 간단히 적어보겠습니다.
+
+&nbsp; `우선 VPC와 Subnets입니다. VPC(Virutal Private Cloud)라는 이름에서 알 수 있는 것처럼 AWS 하나의 기능으로서 유저의 사설 네트워크 클라우드라고 생각`하시면 됩니다. 그리고 `Subnets은 VPC의 IP 주소 범위들을 관리하는 구성요소`라고 생각하시면 됩니다. `ALB나 ECS를 설정할 때에 어떤 VPC에 그리고 어떤 Subnets들에 연결해서 사용할 지 등을 설정`을 해주어야 합니다. Subnets이 IP 주소 범위들을 관리하는 구성요소들이라고 했는데 IP 주소 범위는 어떻게 표현할 수 있을까요? 보통 `IP 주소 범위는 IP CIDR라는 용어로 사용되는 방식으로 표현`됩니다. 관련 내용을 간단하게 설명해보겠습니다. 저도 네트워크에 대한 지식이 많지 않아 단어와 같은 것들이 정확하지 않을 수 있습니다. 0.0.0.0/0, 0.0.0.0/16, 0.0.0.0/24, 0.0.0.0/32와 같은 형태들을 보신 적이 있으실텐데, 각각의 의미를 간단히 설명해보면 다음과 같습니다. ip 하나의 섹션마다 모두 8bit로 표현되며, 제일 마지막 숫자는 8의 배수로 앞에서부터 몇칸까지가 HostId(픽스된 IP대역)인지를 표현합니다.
+
+- 0.0.0.0/0: HostId가 0개 이므로 모든 IP에 해당 한다고 볼 수 있습니다.
+- 172.0.0.0/8: NetId(할당 가능한 IP대역)가 172까지이며 나머지 부분에 해당하는 IP 대역이 HostId라고 볼 수 있습니다.
+- 172.55.0.0/16: NetId가 127.55까지이며 나머지 부분이 HostId라고 볼 수 있습니다.
+
+`즉, 마지막 숫자는 8의 배수로 172.55.0.0/16이라고 표현하게되면, 172.55.x.x에 해당되는 모든 IP 대역을 표현하고 있다고 생각하면 됩니다.`
+
+&nbsp;`두 번째로, 보안그룹(securityGroup)입니다. 단어에서도 알 수 있는 것처럼 어떤 소스에서 서버에 접근할 수 있는지(inbound rules) 그리고 어떤 소스로 서버에서 요청을 보낼 수 있는지(outbound rules)들을 정하는 보안 규칙같은 것들을 정하는 구성요소라고 생각하면 됩니다.`
+
+&nbsp;`마지막으로, 타겟그룹입니다. 타겟그룹은 alb에 들어온 요청들을 어디로 전달할 것인지에 대한 설정입니다.` alb는 이름에서도 알 수 있는 것처럼 load balencer 역할을 하는 것이고, 타겟그룹으로 묶여있는 서버들에게 적절하게 request들을 분배하는 역할을 합니다.
+
+### 4. [CloudFront(CDN)](https://aws.amazon.com/ko/cloudfront/)
+&nbsp; `유저의 요청을 바로 alb로 연결할 수도 있지만, 캐싱을 활용하기 위해서 CloudFront를 최앞단에 배치했습니다.` cloudfront에는 origin이라는 개념이 있습니다. origin은 cloudfront를 통해서 들어오는 요청을 어디로 보낼 것인가라고 이해하면 됩니다. 예전에 cloudFront를 사용했을 때에는 s3 버킷을 origin만 사용할 수 있는줄 알았는데 요즘은 더 발전된 것인지 cloudfront의 origin으로 사용할 수 있는 종류들이 많아졌음을 배웠습니다. `cloudFront의 origin으로 s3 bucket을 사용할 수도 있고, alb도 사용할 수 있고, 그냥 단순히 domain을 연결할 수도 있습니다.` 모든 request를 alb를 통해서 ecs까지 도달하게 하지 않고, `단기간에 몰리는 traffic을 잘 관리하기 위해서 nextjs에서 cache-control을 설정하게 하고 cloudFront는 origin의 cache-control header를 보고 cache 정책`을 결정하도록 설정했습니다.
+
+&nbsp;cloudFront 설정을 하면서 하나 겪었던 이슈가 있었는데, nextjs의 response에 기본적으로 아무런 cache-control header가 설정이 안된 상태였는데 배포를 해도 배포된 새로운 버전의 response가 안내려온는 문제가 있었습니다. `cloudFront에서 origin의 header를 기준으로 cache를 하도록 해두고 origin의 response에 아무런 cache-control 내용이 없으면 기본적으로 무제한 캐싱을 사용합니다.` 그래서 캐시를 안하고 싶은 예를 들어 **html 요청**들은 cache를 하지 않도록 cache-control을 **no-cache**로 설정해야 합니다.
+
+### 5. [Route53](https://aws.amazon.com/ko/route53/), [ACM(AWS Certificate Manager)](https://aws.amazon.com/ko/certificate-manager/)
+
+&nbsp;드디어 마지막입니다. `유저가 서비스에 접근하기 위해서는 domain이 필요하고 그 도메인을 관리하는 영역은 route53이라는 서비스이고, 그 도메인에 https protocol을 지원하기 위해서는 ACM에서 인증서를 발급받고 연결해서 사용`해야 합니다. 위에서도 구조도를 보았지만 지금까지의 설명을 읽은 후에 아래 그림을 다시 한번 보았을 때 조금 더 이해가 되는 것 같은 느낌을 느끼실 수 있으면 좋겠네요.
+
+![서비스 구성도](https://user-images.githubusercontent.com/13966404/146634044-9ad7ea15-c093-4fdb-9cbb-fd6f165b914f.png)
+
+&nbsp;`위 내용은 aws를 기준으로 인프라를 구성할 때에 대한 설명이며, 다른 provider를 이용할 때에는 다른 단어들이 사용될 수 있습니다. 그래도 비슷한 역할들을 하는 구성요소들은 다들 있을 것이고 어떤 역할을 하는지에 대해서만 간단히 익히고, 단어들에 대해서 조금은 익숙해질 수 있는 기회였다면 좋겠습니다.` 저도 사실 네트워크, 인프라에 대한 지식이 거의 없으며 이번 작업을 하면서 단편적으로 익힌 내용들을 적었습니다. 혹시나 부족한 설명이나 잘못된 설명이 있다면 언제든지 피드백 부탁드립니다.
+
+## nextjs 서비스 배포하기 
+
+&nbsp; 이제 서비스 구성을 다했습니다. 그런데 우리는 계속 개발을 할 것이고 계속 서비스를 배포하고 새로운 기능을 유저에게 전달해야 합니다. 우리는 위와 같이 구성한 nextjs 앱을 어떻게 배포할 수 있을까요? 우선 ecs로 배포한 nextjs를 업데이트하기 위해서는 두 가지를 업데이트 해야 합니다.
+
+- `ecr에 docker image를 최신으로 배포합니다.`
+- `ecs에서 새로운 docker image를 사용하는 작업정의(task-definition)을 업데이트합니다.`
+
+&nbsp;저는 위 과정을 github action에 workflow를 작성하여 자동으로 배포를 진행하고 있습니다. 원래 모든 infra를 terraform으로 작성했었는데, terraform은 다른 repository에 따로 모아두고 있었고, 작업정의를 업데이트하기 위해서는 terraform을 같은 repository로 가져와야할까 고민했었는데요. infra code를 해당 repository로 가져오지는 않고 `ecs에 새로운 작업정의를 만드는 것을 aws cli의 aws ecs update-service를 이용해서 배포를 진행하고 있습니다.`
+
+## nextjs 서비스 모니터링하기
+
+&nbsp; 앞으로 서비스를 실제로 운영하면서 모니터링하고 트러블슈팅을 해야할 일들이 더 많이 생길 것 같은데요. 우선은 ecs에서 기본적으로 제공해주는 `ecs 서비스의 측정치탭에서 기본적인 CPU, Memory값들을 모니터링합니다.` 그리고 특별히 서버에서 `어떤 에러들이 발생했는지 등을 확인하기위해서 CloudWatch를 생성해서 ecs 서비스의 로그탭에서 로그들을 확인하고 있습니다.` 아직 production이 배포되지 않은 상태라서 앞으로 어떤 툴들이 필요할지는 조금 더 시간이 지나야 구체적으로 더 많은 경험이 생기고 공유할 수 있을 것 같습니다.
+
+## nextjs 서비스 아키텍처 구성 중 트러블슈팅
+
+### 회사 내부의 네트워크에 대한 이해
+&nbsp;회사 내부에서 사용하는 aws 계정이 하나가 아니라 여러개였고 서로 연관성을 가지고 있었습니다. 이 이야기를 이 글에 자세히 쓸 순 없지만, 관련된 내용을 파악하느라 여기저기 여쭤보고 네트워크나 보안망에 대한 이해가 조금 더 필요했었습니다.
+
+### cloudfront origin, behavior에 대한 이해
+&nbsp; cloudfront를 생성해서 사용하면 가장 기본적으로 익혀야하는 부분이 origin과 behavior에 대한 이해입니다. 우선 `origin은 content의 원천`이라고 생각하시면 됩니다. 그리고 `behavior는 origin에 대한 통신을 할 때에 어떤 규칙을 가지고 통신할 지에 대한 설정`들이라고 생각하시면 됩니다.
+
+&nbsp; `예를 들어 origin은 예를 들어서 s3 bucket`이 될 수 있고, `behavior는 어떤 path에 이 설정을 적용할 것인지 캐시는 어떤 값을 기준으로 할지 혹은 http 요청이 오면 https로 redirect한다와 같은 설정들을 추가`할 수 있습니다.
+
+&nbsp; 실제로 cloudFront를 구성하면서 겪었던 트러블 슈팅에 대해서 간략히 공유하자면,
+
+- `cloudFront에서 캐시키를 origin의 header를 바라보게 만들고 origin의 header에 cache 관련 header가 없다면 무한 캐시가 기본 동작`입니다. origin에서 cache hader를 추가하지 않고 작업하다가 배포하니까 새롭게 배포된 앱이 서빙이 안되길래 살펴보니 위와 같은 문제를 겪었습니다.
+- `cloudFront의 origin으로 특정 domain으로 설정했는데 cloudFront가 해당 origin에 접근해서 바로 response를 주는게 아니라 아예 301 상태 코드를 주면서 그 url로 redirect하는 문제`를 겪었습니다. 이는 `origin에서는 http만 받을 수 있도록 해두었는데, behavior에서 무조건 http to https redirect을 추가했었는데 두개의 설정이 충돌하면서 발생한 문제`였습니다. 위 두개의 설정에 대한 역할에 대해서 적절히 이해하고 있다면 저와 같은 실수를 여러분은 안하실 수 있을 것이라고 생각합니다.
+- 제가 구성하는 nextjs 서비스는 next/image와 같은 next가 제공해주는 image 컴포넌트를 이용하기 위해서는 querystring에 대한 접근이 필요했고, 인증을 위해서 cookie에 대한 접근이 필요했습니다. 그런데 `기본적으로 cloudFront는 path를 기준으로만 작동하기 때문에, origin에서 query나 cookie가 필요하다면 query, cookie등도 모두 넘겨 주어야 한다는 설정을 behavior에 설정`해주어야 합니다.
+- cloudFront을 통해서 들어오는 요청만을 보안적으로 허용하고 싶다면, [cloudfront ip ranges](https://docs.aws.amazon.com/ko_kr/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html)에서 실제로 cloudFront에서 사용하는 ip 대역들을 확인할 수 있습니다.
+
+
+## 마무리
+
+&nbsp; 적다보니, `굉장히 글이 길어지고 스스로가 이해하고 있는 개념들이 굉장히 단편적이고 깊지 못하다는 사실까지 깨닫게 되었는데요. 지금 제가 이해하는 수준들이 걸음마라고 생각하고 앞으로 더 열심히 배우고 싶다는 생각이 들었습니다. 특별한 내용은 없지만 저와 같이 nextjs를 ecs로 구성하고 싶은데 어떻게 시작해야할지 모르는 단계에 있으신 누군가에게 조금이라도 도움이 되는 글이었으면 좋겠다고 생각`하면서 첫 번째 글을 마무리합니다.
