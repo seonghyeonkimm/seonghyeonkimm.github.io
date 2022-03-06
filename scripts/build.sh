@@ -5,11 +5,8 @@ npm run clean
 npm run build
 
 # Update Docs folder
-rm -rf dist
-mv public dist
+rm -rf docs
+mv public docs
 
 # Clean again
 npm run clean
-
-# git add and commit
-git add . && git commit && git push origin dev
