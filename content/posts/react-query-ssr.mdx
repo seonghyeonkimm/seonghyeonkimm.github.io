@@ -1,0 +1,33 @@
+---
+title: react v18, nextjs, (suspense mode) react-query 엣지 케이스
+date: 2021-12-11
+excerpt: react 18과 react-query의 suspense mode를 nextjs환경에서 사용하면서 겪었던 엣지 케이스에 대해서 정리했습니다.
+---
+
+nextjs, react@next, react-dom@next, react-query의 suspense mode를 같이 사용하면서 다음 이슈를 겪었습니다.
+
+1. server에서 page 컴포넌트를 render할 때에 react-query useQuery의 queryFunction이 실행됨.
+  * 원래 react-query의 useQuery는 useEffect안에서 queryFunction을 실행시키기때문에 browser환경에서만 실행되어야하는데 (react-query의 suspense 옵션을 enabled하면) suspense for data fetching의 특성상 브라우저나 서버와 같은 환경과 상관없이 render와 동시에 queryFunction이 실행되기 때문에 위와 같은 상황이 발생합니다.
+  * 그런데 page 컴포넌트의 useQuery는 jwt가 필요한 api를 부르는 hook이었고 server request에 접근할 수 없기 때문에 cookie에 접근할 수 없고 jwt를 얻을 수 없기 때문에 무조건 error를 낼 수 밖에 없었습니다. 그래서 useQuery가 서버에서는 실행이 안되었으면 했는데요. 또, server에서 미리 해당 queryKey의 data를 prefetch하기 때문에 실제로 client에서 page가 render될 때에는 데이터가 있을 건데, 서버에서 불필요하게 useQuery의 queryFunction을 실행시키는 것을 막고 싶었습니다.
+  
+2. 그래서 제가 땜빵(?)으로 취한 접근은 아래와 같이 useQuery를 server에서는 성공한 것처럼 if문을 추가했습니다.
+
+```
+function useMyQuery(queryKey, queryFn) {
+  return useQuery(queryKey, async () => {
+    if (typeof window === 'undefined') {
+      return {};
+    }
+
+    const result = await queryFn();
+    return result;
+  }
+};
+```
+
+3. 그런데 이 접근이 뭔가 마음에 들지 않아서 [react-query repository discussion](https://github.com/tannerlinsley/react-query/discussions/3030)에 올려서 contributor들에게 의견을 구해봤는데요.
+4. 답변으로 아직 React 18이 공식적으로 나오진 않았고 react-query가 이 부분에 대한 대응을 아직 하지 않은 상황이라는 대답만 얻었습니다. 그래서 지금은 우선 제가 한 방법이 어떻게든 작동하게 할 수 있게 하는 방법으로 생각하고 유지해야 될 것 같다는 결론에 도달했습니다.
+
+이렇게 구구절절 적은 이유는 react-query에 대해서 조금 더 알게 된 부분(queryFunction이 어떻게 실행되는지 그리고 suspense option이 true일 때 어떻게 실행되는지와 같은 내용)을 공유하고 싶었고,
+discussion에서 짧은 논의였지만 contributor들과 대화를 나누는 경험이 재밌었고, contributors들이 이 기능은 나중에 React 18이 정식으로 나오면 ssr환경에서 react-query 차원에서 지원이 되어야할 케이스인 것 같다고
+친절하게 답변해준 점도 흥미로워서 겸사겸사 노트를 남겨 보았습니다.
