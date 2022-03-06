@@ -7,7 +7,6 @@
     "start": "gatsby develop",
     "build": "gatsby build",
     "clean": "gatsby clean",
-    "predeploy": "./scripts/build.sh",
     "deploy": "./scripts/deploy.sh"
   },
   "dependencies": {

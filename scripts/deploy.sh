@@ -10,3 +10,6 @@ mv public docs
 
 # Clean again
 npm run clean
+
+## push to github
+git push origin main
