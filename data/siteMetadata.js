@@ -18,7 +18,7 @@ const siteMetadata = {
   youtube: '',
   linkedin: 'https://www.linkedin.com/in/seonghyeon-kim-328757b7/',
   locale: 'ko-KR',
-  // TODO: check contents below
+  // TODO: GA 추가
   analytics: {
     // If you want to use an analytics provider you have to add it to the
     // content security policy in the `next.config.js` file.
@@ -31,7 +31,8 @@ const siteMetadata = {
   newsletter: {
     // supports mailchimp, buttondown, convertkit, klaviyo, revue
     // Please add your .env file and modify it according to your selection
-    provider: 'buttondown',
+    // TODO: Newsletter 추가
+    provider: '',
   },
   comment: {
     // If you want to use an analytics provider you have to add it to the
