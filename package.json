@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "export": "next export -o docs",
     "postbuild": "npm run sitemap && npm run rss",
     "sitemap": "cross-env NODE_OPTIONS='--experimental-json-modules' node ./scripts/generate-sitemap.mjs",
     "rss": "cross-env NODE_OPTIONS='--experimental-json-modules' node ./scripts/generate-rss.mjs",
@@ -13,7 +12,7 @@
     "analyze": "cross-env ANALYZE=true next build",
     "lint": "next lint --fix --dir pages --dir components --dir lib --dir layouts --dir scripts",
     "prepare": "husky install",
-    "deploy": "next build && next export && touch docs/.nojekyll && git add . && git commit -m '[deploy] Update docs folder' && git push origin main"
+    "deploy": "next build && next export -o docs && touch docs/.nojekyll && git add . && git commit -m '[deploy] Update docs folder' && git push origin main"
   },
   "dependencies": {
     "@fontsource/inter": "4.5.2",
