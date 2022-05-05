@@ -1,5 +1,7 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 
+// generate favicon files using web service below
+// @see https://realfavicongenerator.net/
 class MyDocument extends Document {
   render() {
     return (
