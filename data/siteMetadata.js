@@ -10,7 +10,7 @@ const siteMetadata = {
   // @see https://www.reshot.com/free-svg-icons/item/lotus-MSCKYWU8PD/
   siteLogo: '/static/images/logo.png',
   image: '/static/images/avatar.png',
-  socialBanner: '/static/images/twitter-card.png',
+  socialBanner: '/static/images/og-card.png',
   email: 'impressor7@gmail.com',
   github: 'https://github.com/seonghyeonkimm',
   twitter: 'https://twitter.com/seonghyeon___',
