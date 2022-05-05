@@ -1,17 +1,20 @@
 ---
-title: OpenApi 스펙을 활용해서 type-safe하게 ReactQuery 사용하기 
-date: 2022-02-20
-excerpt: ReactQuery를 openapi-typescript를 활용해서 typesafe하게 활용해본 경험을 작성했습니다.
+title: openapi 스펙을 활용해서 type-safe하게 react-query 사용하기
+date: '2022-02-20'
+tags: ['openapi', 'react-query', 'react']
+draft: false
+summary: ReactQuery를 openapi-typescript를 활용해서 typesafe하게 활용해본 경험을 작성했습니다.
 ---
+
 &nbsp;graphql 백엔드와 통신하면서 프론트 작업을 할 때에는 graphql-codegen 사용해서 graphql schema를 기준으로 types을 generate해서 사용했었습니다. 그래서 따로 parameters, body, 그리고 response에 대해서 type을 따로 신경쓸 필요 없었고 type-safe하게 작업할 수 있었습니다. 그런데 이번에 시작한 프로젝트에서는 graphql가 아닌 rest api로 구성되어있는 백엔드와 통신해야하는 상황이 생겼고, 직접 type들을 타이핑을 해야한다고 생각하니 그렇게 하기가 싫었습니다. (물론, [Paste JSON as Code](https://marketplace.visualstudio.com/items?itemName=quicktype.quicktype)을 사용하면 조금 더 편하게 할 수 있긴 하지만 모든 문제를 해결해주는 것은 아니기 때문에)
 
 &nbsp;예전에 최태건님이 FEConf에서 발표했던 [OpenAPI Specification으로 타입-세이프하게 API 개발하기: 희망편 VS 절망편](https://www.youtube.com/watch?v=J4JHLESAiFk) 영상을 보면서 백엔드에서 OpenApi 스펙을 제공해준다면 이 정보를 이용해서 typing을 만들어 낼 수 있다는 사실을 배웠던 것이 생각이 났고 새로운 프로젝트를 시작하는 김에 OpenApi를 사용해서 type을 generate하고 type-safe하게 react-query hook을 사용하고 싶었습니다. 그래서 개인적으로 어떻게 OpenApi 스펙과 몇 가지 라이브러리들을 활용해서 어떻게 react-query hook을 사용하고 있는지 정리해보려고합니다. 바로 그냥 코드만 보고 싶으신 분들은 [아래 링크](https://gist.github.com/seonghyeonkimm/977b58387f9f4e11afeee8c7685c2e89#file-1-use-oai-query-example-ts)를 클릭하셔서 코드만 확인하실 수도 있습니다.
 
 &nbsp;저는 다음 라이브러리들을 이용했습니다.
 
-* [react-query](https://react-query.tanstack.com/): server state를 요청하고 관리하기 위해서 사용합니다.
-* [openapi-typescript](https://github.com/drwpow/openapi-typescript): 간단한 커맨드를 사용해서 OpenApi 스펙을 기준으로 typing을 생성해줍니다.
-* [ts-toolbelt](https://github.com/millsp/ts-toolbelt): openapi-typescript 생성해주는 type들을 편하게 사용하기 위해서 typescript utils들을 제공해주는 라이브러리를 사용했습니다.
+- [react-query](https://react-query.tanstack.com/): server state를 요청하고 관리하기 위해서 사용합니다.
+- [openapi-typescript](https://github.com/drwpow/openapi-typescript): 간단한 커맨드를 사용해서 OpenApi 스펙을 기준으로 typing을 생성해줍니다.
+- [ts-toolbelt](https://github.com/millsp/ts-toolbelt): openapi-typescript 생성해주는 type들을 편하게 사용하기 위해서 typescript utils들을 제공해주는 라이브러리를 사용했습니다.
 
 &nbsp;위의 라이브러리들을 설치를 하고나서 우선 처음 해야하는 작업은 OpenApi 스펙을 input으로 주고 openapi-typescript 라이브러리를 활용해서 typing을 생성해야 합니다. 우선 이 내용을 진행하기 위해서는 백엔드 서버에서 OpenApi 스펙이 정의된 JSON을 받을 수 있어야 합니다. 모든 분들이 이 정보를 가지고 있지 않으실 수도 있기 때문에 설명을 위해서 인터넷에 공개되어있는 [openapi-generator OpenApi Specs](https://api.openapi-generator.tech/api-docs)를 사용해서 type을 만들고 react-query로 요청을 해본다고 가정해보겠습니다.
 
@@ -34,146 +37,132 @@ npx openapi-typescript https://api.openapi-generator.tech/api-docs --output ./sr
 &nbsp;다음으로 react-query의 useQuery의 key값을 매번 직접 지정해주기 귀찮기 때문에 queryKey로 paths의 key로 사용하고, 그 값을 기준으로 params, body, response type, error type 등을 추론하도록 만들기 위해서는 util성의 타입들을 먼저 작업해야 했습니다. 이 utils성 타입들은 openapi-typescript가 생성해준 type들에서 필요한 key들만을 select하거나 parameters 혹은 response의 type를 추론하기 위해서 다음과 같이 작업했습니다.
 
 ```ts
-import { O } from 'ts-toolbelt';
+import { O } from 'ts-toolbelt'
 
-import { paths } from './types';
+import { paths } from './types'
 
 // 생성된 paths interface의 모든 키들의 type
-export type OAIPathKeys = keyof paths;
+export type OAIPathKeys = keyof paths
 // 주로 사용되는 api method들에 대한 type
-export type OAIMethods = 'get' | 'put' | 'post' | 'delete' | 'patch';
+export type OAIMethods = 'get' | 'put' | 'post' | 'delete' | 'patch'
 // 특정 method가 존재하는 paths key들만 뽑기 위한 type
 export type OAIMethodPathKeys<TMethod extends OAIMethods> = O.SelectKeys<
   paths,
   Record<TMethod, unknown>
->;
+>
 
 // 특정 paths, method에 해당되는 path parameters type (api params에 대한 type)
-export type OAIPathParameters<
-  TPath extends OAIPathKeys,
-  TMethod extends OAIMethods,
-> = O.Path<paths, [TPath, TMethod, 'parameters', 'path']>;
+export type OAIPathParameters<TPath extends OAIPathKeys, TMethod extends OAIMethods> = O.Path<
+  paths,
+  [TPath, TMethod, 'parameters', 'path']
+>
 // 특정 paths, method에 해당되는 query parameters type (api querystring에 대한 type)
-export type OAIQueryParameters<
-  TPath extends OAIPathKeys,
-  TMethod extends OAIMethods,
-> = O.Path<paths, [TPath, TMethod, 'parameters', 'query']>;
+export type OAIQueryParameters<TPath extends OAIPathKeys, TMethod extends OAIMethods> = O.Path<
+  paths,
+  [TPath, TMethod, 'parameters', 'query']
+>
 // react-query의 variables로 params, querystring을 통합해서 받아서 사용하기 위한 type
 export type OAIParameters<
   TPath extends OAIPathKeys,
-  TMethod extends OAIMethods,
+  TMethod extends OAIMethods
 > = OAIPathParameters<TPath, TMethod> extends Record<string, unknown>
   ? OAIQueryParameters<TPath, TMethod> extends Record<string, unknown>
-    ? O.Merge<
-        OAIPathParameters<TPath, TMethod>,
-        OAIQueryParameters<TPath, TMethod>
-      >
+    ? O.Merge<OAIPathParameters<TPath, TMethod>, OAIQueryParameters<TPath, TMethod>>
     : OAIPathParameters<TPath, TMethod>
   : OAIQueryParameters<TPath, TMethod> extends Record<string, unknown>
   ? OAIQueryParameters<TPath, TMethod>
-  : undefined;
+  : undefined
 
 // 특정 path, method의 statusCode 200에 대한 response type
-export type OAIResponse<
-  TPath extends keyof paths,
-  TMethod extends OAIMethods,
-> = O.Path<
+export type OAIResponse<TPath extends keyof paths, TMethod extends OAIMethods> = O.Path<
   paths,
   // 아래의 path는 주어진 OpenApi Specs에 따라서 달라질 수 있습니다.
   [TPath, TMethod, 'responses', 200, 'schema']
->;
+>
 ```
 
 &nbsp;다음으로, 위에 작성한 utils성 type들을 활용해서 react-query의 useQuery의 type을 확장해주는 useOAIQuery라는 hook을 만들었습니다.
 
 ```ts
-import type { UseQueryOptions } from 'react-query';
-import { useQuery } from 'react-query';
+import type { UseQueryOptions } from 'react-query'
+import { useQuery } from 'react-query'
 
 // BASE_URL은 요청해야하는 서버의 주소로 변경 필요
-const BASE_URL = 'https://api.openapi-generator.tech';
+const BASE_URL = 'https://api.openapi-generator.tech'
 
 // useQuery에 전달한 queryKey, variables를 requestUrl로 만들기 위한 utils
-export const getRequestUrl = (
-  queryKey: string,
-  variables?: Record<string, unknown>,
-) => {
-  let url = `${BASE_URL}${queryKey}`;
+export const getRequestUrl = (queryKey: string, variables?: Record<string, unknown>) => {
+  let url = `${BASE_URL}${queryKey}`
 
   const paramKeys = (queryKey.match(/{[a-zA-z-]+}/g) ?? []).map((param) =>
-    param.replace(/[{}]/g, ''),
-  );
+    param.replace(/[{}]/g, '')
+  )
   paramKeys.forEach((param) => {
-    url = url.replace(`{${param}}`, variables?.[param] as string);
-  });
+    url = url.replace(`{${param}}`, variables?.[param] as string)
+  })
 
   const qs = new URLSearchParams(
     Object.entries(variables ?? {}).reduce((current, [key, value]) => {
       if (paramKeys.includes(key)) {
-        return current;
+        return current
       }
 
       return {
         ...current,
         [key]: value,
-      };
-    }, {}),
-  ).toString();
+      }
+    }, {})
+  ).toString()
 
   if (qs) {
-    url = `${url}?${qs}`;
+    url = `${url}?${qs}`
   }
 
-  return url;
-};
+  return url
+}
 
 // 위에 생성한 types, utils을 활용하여 useQuery를 wrapping하고 있는 useOAIQuery
 export function useOAIQuery<
   TQueryKey extends OAIMethodPathKeys<'get'>,
   TVariables extends OAIParameters<TQueryKey, 'get'>,
-  TData extends OAIResponse<TQueryKey, 'get'>,
+  TData extends OAIResponse<TQueryKey, 'get'>
 >({
   queryKey,
   queryOptions,
   variables,
 }: {
-  queryKey: TQueryKey;
+  queryKey: TQueryKey
   queryOptions?: Omit<
-    UseQueryOptions<
-      TData,
-      unknown,
-      TData,
-      (Record<string, unknown> | TQueryKey | undefined)[]
-    >,
+    UseQueryOptions<TData, unknown, TData, (Record<string, unknown> | TQueryKey | undefined)[]>,
     'queryKey' | 'queryFn'
-  >;
+  >
 } & (TVariables extends undefined
   ? {
-      variables?: undefined;
+      variables?: undefined
     }
   : O.RequiredKeys<NonNullable<TVariables>> extends never
   ? {
-      variables?: TVariables;
+      variables?: TVariables
     }
   : {
-      variables: TVariables;
+      variables: TVariables
     })) {
   return useQuery(
     [queryKey, variables],
     async ({ signal }) => {
       const response = await fetch(getRequestUrl(queryKey, variables), {
         signal,
-      });
-     
+      })
+
       if (!response.ok) {
-        throw new Error('Response error');
+        throw new Error('Response error')
       }
 
-      const json = (await response.json()) as TData;
-      return json;
+      const json = (await response.json()) as TData
+      return json
     },
-    queryOptions,
-  );
+    queryOptions
+  )
 }
 ```
 

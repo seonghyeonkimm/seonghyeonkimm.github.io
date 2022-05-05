@@ -1,36 +1,42 @@
 ---
 title: React 18 미리보기
-date: 2022-02-10
-excerpt: React 18을 쓰기 시작한지는 꽤 되었지만 제대로 이해하지 못한 부분들이 많아서 다시 조금 더 꼼꼼히 공부하고 기록했습니다.
+date: '2022-02-10'
+tags: ['react']
+draft: false
+summary: React 18을 쓰기 시작한지는 꽤 되었지만 제대로 이해하지 못한 부분들이 많아서 다시 조금 더 꼼꼼히 공부하고 기록했습니다.
 ---
 
 ## 즉시 사용 가능한 개선점
+
 코드의 변경 없이 React 18로 업데이트하자마자 얻을 수 있는 개선점에 대해서 간단히 이해해보자.
 
 ### [Automatic batching for fewer renders](https://github.com/reactwg/react-18/discussions/21)
+
 &nbsp; 제목에서도 알 수 있는 것처럼 간단히 설명하자면, React 18 이전에는 오직 이벤트 핸들러 안에서 발생한 setState만 모아서 처리 했지만, React 18 이후부터는 promise, setTimeout 등에서 발생한 연속적인 setState도 모아서 처리될 수 있도록 개선되었다는 내용이다.
 
 &nbsp; 위 기능을 피하고 싶다면 react-dom의 `flushSync` api를 이용하면 모아서 처리하지 않고 하나의 setState가 바로 re-render를 일으키도록 명시적으로 코드를 추가할 수 있다.
 
 ```tsx
-import { flushSync } from 'react-dom'; // Note: react-dom, not react
+import { flushSync } from 'react-dom' // Note: react-dom, not react
 
 function handleClick() {
   flushSync(() => {
-    setCounter(c => c + 1);
-  });
+    setCounter((c) => c + 1)
+  })
   // React has updated the DOM by now
   flushSync(() => {
-    setFlag(f => !f);
-  });
+    setFlag((f) => !f)
+  })
   // React has updated the DOM by now
 }
 ```
 
 ### [SSR support for Suspense](https://github.com/reactwg/react-18/discussions/22)
+
 &nbsp; 원래 React 18 이전에는 SSR에서는 Suspense가 지원되지 않았는데 React 18부터 SSR에서도 Suspense가 지원된다. 그래서 nextjs에서도 Suspense를 사용하려면 react, react-dom을 18 버전으로 업데이트를 해야 사용할 수 있다. React 18 이전의 SSR은 fetch data -> render html -> load code (client) -> hydration(client) 과 같이 그 이전의 작업이 끝나야만 다음 작업을 진행할 수 있었기 때문에 과정 중에 느린 부분이 있다면 전체적으로 느려질 수 밖에 없었지만 이번 업데이트로 Suspense로 감싸진 부분마다 개별적으로 위 과정들을 따로 진행할 수 있고 완료되는 대로 HTML을 서버에서 추가적으로 HTML Streaming을 사용해서 전달받을 수 있고 hydration도 따로 진행할 수 있게 되었다.
 
 ### [Behavioral changes to Suspense in React 18](https://github.com/reactwg/react-18/discussions/7)
+
 &nbsp; React 18 이전에는 Suspense fallback이 render되었더라도 suspended 상태를 초래한 컴포넌트를 제외한 다른 sibling은 DOM에 마운트되고 effect도 실행되지만 UI에서 보여주지 않는 식으로 작동했다면, React 18에서부터는 아예 render도 안되고 effect도 실행이 안되도록 변경되었다.
 
 ## Concurrent features
@@ -39,51 +45,54 @@ function handleClick() {
 
 &nbsp; React 18에서 제공되는 Concucrrent features로는 다음과 같은 것들이 있다. 이외에도 React Server Component와 Built-in Suspense Cache와 같은 기능들은 아직 추가가 되지 않았고 나중에 추가될 예정이지만 React 18 마이너 버전 업데이트 어디선가는 추가될 예정이라고 한다. 새로 생긴 API들이 어떤 기능들을 담고 있는지 간단하게 살펴보자.
 
-* startTransition
-  * startTransition으로 감싼 state updater는 not urgent state update로 분류되고, 다른 urgent state update보다 뒤로 밀릴 수 있게 하여 user가 보는 화면이 더 매끄럽게 작동할 수 있도록 한다.
-  * startTransition이 setTimeout가 다른 점은 setTimeout처럼 스케줄된 시간 이후에 실행되는 것이 아니라 그 즉시 실행이 된다는 점이다. 하지만 callback이 pending이 될 수 있다는 특징이 있습니다.
-  * [codesandbox 예시](https://codesandbox.io/s/react-18-starttransition-hiig0?file=/src/App.js)
-* useDeferredValue
-  * 말 그대로 지연된 값을 return하는 hook입니다. startTransition 대신에 useDeferredValue를 사용하면 startTransition안에 특정 state updater를 넣는 것과 비슷한 효과를 얻을 수 있습니다.
-  * [codesandbox 예시](https://codesandbox.io/s/react-18-usedeferredvalue-forked-d33ri?file=/src/App.js)
-* [useId](https://github.com/reactwg/react-18/discussions/111)
-  * 이름 그대로 React에서 server에서 생성한 react tree와 client에서 그린 react tree 사이에 hydration이 원활하게 할 수 있도록, id가 일관적인 것이 필요했는데, useId를 이용하면 unique하고 hydration에서 문제가 없는 id를 생성해준다고 한다.
-  * [codesandbox 예시](https://codesandbox.io/s/react-18-useid-3ybbt?file=/src/App.js)
-* [useInsertionEffect](https://github.com/reactwg/react-18/discussions/110)
-  * React 컴포넌트가 그려지는 순서를 생각하면, 다음과 같다.
-  * render -> (synchronous) useLayoutEffect -> commit(browser paint) -> (asynchronous) useEffect
-  * useInsertionEffect는 useLayoutEffect와 거의 비슷하지만 ref에 대한 접근을 할 수 없다.
-  * 기본적으로 React를 개발할 때에 css library를 개발하지 않는 이상 위 hook을 쓸 일은 없다고 한다.
-  * css-in-js와 같이 특정 시점에 style 태그를 생성하고 document head에 추가하게되는데, browser가 추가된 style을 해석하고 react가 browser에 render 결과를 그리는 작업이 최대한 효율적으로 이루어질 수 있도록 컨트롤을 도와주는 hook이라고 한다.
-* [useSyncExternalStore](https://blog.saeloun.com/2021/12/30/react-18-usesyncexternalstore-api#understanding-usesyncexternalstore-hook)
-  * react에서 말하는 internalSource는 props, state, context와 같은 것이다.
-  * 그러니까 external은 React 자체에서 제공하는 data source가 아닌 외부의 mutable한 store를 뜻한다.
-  * 즉, useSycnExternalStore는 외부의 store의 변경을 감지해서 internal state로 sync시켜주는 hook이다.
-  * 실제로 그냥 React 코드를 짤 때에는 크게 사용할 일이 없어보이지만, react state management library를 쓰는 사람들에게 필요한 hook인 것 같습니다.
-  * [codesandbox 예시](https://codesandbox.io/s/react-18-usesyncexternalstore-62zsu?file=/src/App.js)
--------------------------
-* (추후에 추가예정) SuspenseList
-  * 여러개의 Suspense children들이 있는 경우에 어떤 순서로 resolve할 것인지 등에 대한 option을 지정할 수 있는 API입니다.
-  * 아마도 React 18에 포함될 예정이었지만, 18 초기 release에는 포함이 안될 것으로 보이고 나중에 포함될 것으로 보입니다.
-* (추후에 추가예정) [React Server Component](https://github.com/reactwg/react-18/discussions/25)
-  * React Server Component만으로도 꽤 많은 내용을 쓸 수 있겠지만, 간단하게만 설명하자면 서버에서 실행될 수 있는 Component입니다.
-  * db query도 직접할 수 있고, 아무리 큰 라이브러리를 쓰더라도 client에서 해당 라이브러리를 download 받을 필요가 없습니다.
-  * JSON으로 stringfy될 수 있는 정도의 정보만 props에 추가할 수 있어서 Event Handler같은 것은 추가할 수 없습니다.
-* (추후에 추가예정) [Built-in Suspense Cache](https://github.com/reactwg/react-18/discussions/25)
-  * Suspense로 감싸면 data가 아직 resolve되지 않았을 때 fallback이 render되고 data가 resolve되면 실제 컴포넌트가 render된다.
-  * 그런데 props 혹은 state가 바뀌면서 다른 data fetching을 시작하고 다시 fallback으로 떨어졌다가 다시 render되고 다시 예전 컴포넌트를 render하려고 해도, Suspense가 기본적으로 cache를 하고 있어서 데이터를 다시 불러오지 않고 캐시되어 있던 데이터를 사용해서 render가 될 수 있도록 Suspense에 cache 기능을 넣으려고 하는 것 같습니다.
-  * react-query의 기능과 비교를 해본다면 cacheTime이 있어서 cache가 있는 경우에는 우선 render하고 background에서 refetching하는 기능을 React만으로도 쉽게 짤 수 있는 느낌이 되려나 싶습니다.
-  * [codesandbox](https://codesandbox.io/s/sad-banach-tcnim?file=/src/App.js)
-  
+- startTransition
+  - startTransition으로 감싼 state updater는 not urgent state update로 분류되고, 다른 urgent state update보다 뒤로 밀릴 수 있게 하여 user가 보는 화면이 더 매끄럽게 작동할 수 있도록 한다.
+  - startTransition이 setTimeout가 다른 점은 setTimeout처럼 스케줄된 시간 이후에 실행되는 것이 아니라 그 즉시 실행이 된다는 점이다. 하지만 callback이 pending이 될 수 있다는 특징이 있습니다.
+  - [codesandbox 예시](https://codesandbox.io/s/react-18-starttransition-hiig0?file=/src/App.js)
+- useDeferredValue
+  - 말 그대로 지연된 값을 return하는 hook입니다. startTransition 대신에 useDeferredValue를 사용하면 startTransition안에 특정 state updater를 넣는 것과 비슷한 효과를 얻을 수 있습니다.
+  - [codesandbox 예시](https://codesandbox.io/s/react-18-usedeferredvalue-forked-d33ri?file=/src/App.js)
+- [useId](https://github.com/reactwg/react-18/discussions/111)
+  - 이름 그대로 React에서 server에서 생성한 react tree와 client에서 그린 react tree 사이에 hydration이 원활하게 할 수 있도록, id가 일관적인 것이 필요했는데, useId를 이용하면 unique하고 hydration에서 문제가 없는 id를 생성해준다고 한다.
+  - [codesandbox 예시](https://codesandbox.io/s/react-18-useid-3ybbt?file=/src/App.js)
+- [useInsertionEffect](https://github.com/reactwg/react-18/discussions/110)
+  - React 컴포넌트가 그려지는 순서를 생각하면, 다음과 같다.
+  - render -> (synchronous) useLayoutEffect -> commit(browser paint) -> (asynchronous) useEffect
+  - useInsertionEffect는 useLayoutEffect와 거의 비슷하지만 ref에 대한 접근을 할 수 없다.
+  - 기본적으로 React를 개발할 때에 css library를 개발하지 않는 이상 위 hook을 쓸 일은 없다고 한다.
+  - css-in-js와 같이 특정 시점에 style 태그를 생성하고 document head에 추가하게되는데, browser가 추가된 style을 해석하고 react가 browser에 render 결과를 그리는 작업이 최대한 효율적으로 이루어질 수 있도록 컨트롤을 도와주는 hook이라고 한다.
+- [useSyncExternalStore](https://blog.saeloun.com/2021/12/30/react-18-usesyncexternalstore-api#understanding-usesyncexternalstore-hook)
+  - react에서 말하는 internalSource는 props, state, context와 같은 것이다.
+  - 그러니까 external은 React 자체에서 제공하는 data source가 아닌 외부의 mutable한 store를 뜻한다.
+  - 즉, useSycnExternalStore는 외부의 store의 변경을 감지해서 internal state로 sync시켜주는 hook이다.
+  - 실제로 그냥 React 코드를 짤 때에는 크게 사용할 일이 없어보이지만, react state management library를 쓰는 사람들에게 필요한 hook인 것 같습니다.
+  - [codesandbox 예시](https://codesandbox.io/s/react-18-usesyncexternalstore-62zsu?file=/src/App.js)
+
+---
+
+- (추후에 추가예정) SuspenseList
+  - 여러개의 Suspense children들이 있는 경우에 어떤 순서로 resolve할 것인지 등에 대한 option을 지정할 수 있는 API입니다.
+  - 아마도 React 18에 포함될 예정이었지만, 18 초기 release에는 포함이 안될 것으로 보이고 나중에 포함될 것으로 보입니다.
+- (추후에 추가예정) [React Server Component](https://github.com/reactwg/react-18/discussions/25)
+  - React Server Component만으로도 꽤 많은 내용을 쓸 수 있겠지만, 간단하게만 설명하자면 서버에서 실행될 수 있는 Component입니다.
+  - db query도 직접할 수 있고, 아무리 큰 라이브러리를 쓰더라도 client에서 해당 라이브러리를 download 받을 필요가 없습니다.
+  - JSON으로 stringfy될 수 있는 정도의 정보만 props에 추가할 수 있어서 Event Handler같은 것은 추가할 수 없습니다.
+- (추후에 추가예정) [Built-in Suspense Cache](https://github.com/reactwg/react-18/discussions/25)
+  - Suspense로 감싸면 data가 아직 resolve되지 않았을 때 fallback이 render되고 data가 resolve되면 실제 컴포넌트가 render된다.
+  - 그런데 props 혹은 state가 바뀌면서 다른 data fetching을 시작하고 다시 fallback으로 떨어졌다가 다시 render되고 다시 예전 컴포넌트를 render하려고 해도, Suspense가 기본적으로 cache를 하고 있어서 데이터를 다시 불러오지 않고 캐시되어 있던 데이터를 사용해서 render가 될 수 있도록 Suspense에 cache 기능을 넣으려고 하는 것 같습니다.
+  - react-query의 기능과 비교를 해본다면 cacheTime이 있어서 cache가 있는 경우에는 우선 render하고 background에서 refetching하는 기능을 React만으로도 쉽게 짤 수 있는 느낌이 되려나 싶습니다.
+  - [codesandbox](https://codesandbox.io/s/sad-banach-tcnim?file=/src/App.js)
+
 ## New StrictMode (StrictMode + StrictEffect) - [링크](https://github.com/reactwg/react-18/discussions/19)
+
 &nbsp;StrictMdoe는 React 16.3에서부터 추가되었습니다. 리액트가 개선됨에 따라 문제가 생길 수 있는 코드들을 미리 진단하는 역할을 하는 API입니다. StrictMode는 dev 환경에만 영향이 있고 production에서는 영향이 없습니다. 사용하는 방법으로는 react에서 제공하는 `<React.StrickMode>` 컴포넌트를 StrictMode를 적용하고자 하는 컴포넌트 상위에 위치시키면 됩니다. React 18 이전의 이 API는 의도적으로 컴포넌트를 두 번 render하도록 만들었는데, React 18 오면서 부터는 Strict Effect라는 것이 추가되면서 useEffect도 두 번 실행되도록 변경되었다고 합니다. 즉, StrictMode에서 React는 의도적으로 effect가 mount -> unmount -> mount하는 과정을 거치게 됩니다.
-  
+
 &nbsp;리액트에 앞으로 추가될 기능들은 컴포넌트가 한 번 이상 mount되고 unmount되는 동안에도 문제 없이 작동해야만 정상적으로 작동할 것이기 때문에 위와 같은 Dev 환경에서만 작동하는 API를 사용하도록 추천하고 있습니다. 하지만 이로 인해 개발환경과 프로덕 환경의 동작이 다른 부분이 생길 수 있고 혼란이 생길 수도 있다고 생각했습니다. 실제로 스스로 혼란을 겪고 디버깅하는 데에 어려움을 겪었던 적이 있었습니다. 대부분은 문제가 없을 것이라고 하지만 개발자 입장에서 헷갈릴 수 있기 때문에 정확히 이해하고 넘어가는게 좋겠다고 생각했습니다.
-  
+
 &nbsp;한 번 이상의 mount, unmount에 대응이 되어야 하는 이유는 React 팀에서 이전에 추가한 Fast Refresh와 아직은 개발 중이지만 추가될 예정인 Offscreen API 때문이라고 설명하고 있는데 Offscreen API는 unmount되었을 때 뿐만 아니라 화면에서 사라졌을 경우에도(tab의 이동 혹은 virtualized list) state를 유지하지만 컴포넌트를 숨기기만 하면서 다시 컴포넌트가 나타났을 때에 이전과 동일한 기능을 유지하기 위해서 unmount -> mount 과정을 똑같이 거친다고 여기고 있고 그렇기 때문에 useEffect가 몇 번이고 실행되어도 코드에 문제가 없어야 된다고 말하고 있습니다.
-  
+
 &nbsp;React StrictMode가 설정되어 있는 상태에서 컴포넌트 render하게 되면 다음과 같은 과정이 실행됩니다.
-  
+
 ```
 - React renders the component.
 - React mounts the component
@@ -98,16 +107,16 @@ function handleClick() {
 ```
 
 &nbsp;useEffect에 이미 deps list에 특정 값이 있는 경우에는 이미 한 번 이상 해당 useEffect가 실행될 수 있음을 전제하기 때문에 문제가 없을 것이고 Strict Mode가 설정되어 있을 때에 문제가 생길 수 있는 두 가지의 경우 일 것이라고 [react-18 discussion](https://github.com/reactwg/react-18/discussions/18)에서 소개하고 있다. unmount할 때 실행되는 cleanup function이 있을 경우와 mount되었을 때에 한번만 실행되어야 하는 경우입니다. 이미 많은 React 개발자들이 이를 최대한 맞추고 있겠지만, cleanup function이 있는 useEffect는 다시 mount될 때에 이전의 상태유지할 수 있는 처리가 필요하다는 이야기입니다. unmount에서 removeEventListener를 했다면, mount할 때에는 무조건 다시 addEventListener를 하는 것처럼. 그리고 한 번만 실행되어야 하는 effect의 경우 dev와 production의 경우 동일하게 맞추고 싶다면 useRef에 boolean값을 저장해두고 해당 값을 참조해서 effect를 작성하는 식으로 보완이 필요할 수 있겠습니다. 예를 들면, 아래 코드처럼.
-  
+
 ```tsx
 export function useEffectOnce(effect: React.EffectCallback) {
-  const isRun = React.useRef(false);
+  const isRun = React.useRef(false)
 
   React.useEffect(() => {
     if (!isRun.current) {
-      isRun.current = true;
-      effect();
+      isRun.current = true
+      effect()
     }
-  }, []);
+  }, [])
 }
 ```

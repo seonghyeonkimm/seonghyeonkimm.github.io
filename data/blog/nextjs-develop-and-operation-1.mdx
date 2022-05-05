@@ -1,7 +1,9 @@
 ---
 title: nextjs 서비스 개발부터 운영까지 (1) - nextjs 서비스 아키텍처
-date: 2021-12-18
-excerpt: nextjs로 지금 현재 커머스를 개발하고 있습니다. 그런데 어쩌다보니 많은 부분에 있어서 직접 셋업하는 과정에 참여했고, 그 과정에서 배웠던 내용들을 팀원들에게 공유하고자 다음 글을 기획했습니다.
+date: '2021-12-18'
+tags: ['nextjs']
+draft: false
+summary: nextjs로 지금 현재 커머스를 개발하고 있습니다. 그런데 어쩌다보니 많은 부분에 있어서 직접 셋업하는 과정에 참여했고, 그 과정에서 배웠던 내용들을 팀원들에게 공유하고자 다음 글을 기획했습니다.
 ---
 
 &nbsp;nextjs로 지금 현재 커머스를 개발하고 있습니다. `그런데 어쩌다보니 많은 부분에 있어서 직접 셋업하는 과정에 참여했고, 그 과정에서 배웠던 내용들을 팀원들에게 공유하고자 다음 글을 기획했습니다.` 실제로 나중에는 어떻게 구성들이 추가될지 삭제될지 모르곘지만 아래와 같은 구성으로 몇개의 글을 작성해보려고 합니다. 긴 글을 다 읽기 귀찮으신 분들을 위해서 핵심 내용들만을 `강조`해두려고 최대한 노력했습니다. 시간이 부족하신 분들은 강조해둔 영역만 읽으셔도 충분할 것이라고 생각합니다.
@@ -15,6 +17,7 @@ excerpt: nextjs로 지금 현재 커머스를 개발하고 있습니다. 그런�
 &nbsp;처음 글의 주제는 어떤 논의 및 의사결정 과정을 거쳐서 어떤 서비스 아키텍처를 구성하기로 결정했었는지에 대해서 공유하고 서비스 아키텍처를 구성하면서 어떤 요소들에 대한 이해와 공부가 필요했고, 어떤 트러블슈팅 등을 겪었는지에 대해서 적어 보겠습니다. 사실 이 글을 쓰기 시작하면서 얼마나 자세히 써야할까 고민을 했습니다. 결론적으로는 작성하면서 스스로도 어느 정도까지 이해하고 있는지에 대해서도 점검하면 좋겠다는 생각이 들었고, `최대한 자세하게 풀어서 적어 보면서 프론트엔드 개발자들 중에서 아직 SSR Framework에 대한 경험이 거의 없는 개발자들도 이해할 수 있도록 nextjs와 서비스 인프라 관련된 내용들에 있어서 어떤 역할을 하는 것이고 어떻게 사용되는 것인지에 대해서도 최대한 자세히 적어보기로 생각했습니다.`
 
 ## 목차
+
 - [nextjs는 무엇에 쓰는 물건인가?](#nextjs는-무엇에-쓰는-물건인가)
 - [nextjs 서비스 아키텍처](#nextjs-서비스-아키텍처)
 - [nextjs 서비스 배포하기](#nextjs-서비스-배포하기)
@@ -22,6 +25,7 @@ excerpt: nextjs로 지금 현재 커머스를 개발하고 있습니다. 그런�
 - [nextjs 서비스 아키텍처 구성 중 트러블슈팅](#nextjs-서비스-아키텍처-구성-중-트러블슈팅)
 
 ## nextjs는 무엇에 쓰는 물건인가?
+
 &nbsp; React로 개발할 때에 SPA로 접근하는게 대부분이었습니다. 그래서 `SSR을 해야 하는 경우에만 nextjs를 찾았던 것으로 기억합니다. SEO에 대한 대응이 필요한 서비스 혹은 페이지를 만들어야 되는데 어떤 framework를 사용해야하지라는 질문을 할 때 보통 떠올리던 것이 nextjs였습니다.` 그렇지만, 지금 현재 nextjs는 **next export**를 통해서 서버 없이 동작할 수 있도록 **SSG(Static Site Generation)**을 지원하기도 하고, next 서버를 띄운다고 하더라도 html을 서빙하더라도 항상 매번 html을 생성해서 response를 해주는 것이 아니고 미리 빌드 시에 pre-rendering을 하여 특정 페이지는 html을 파일을 서빙하기도 하고 getServerSideProps API를 통해서 그때그때 Server에서 만들어지는 형태의 페이지를 섞어서 사용할 수도 있습니다. 그래서 지금 [공식 사이트](https://nextjs.org/)에 들어가게 되면 `SSR을 전면에 내세운 것이 아니라 The React Framework For Production이라는 문구로 소개하고 있고 SSR만을 위한 것이 아니라 React를 사용해서 Application을 개발할 때에 언제든지 사용할 수 있는 프레임워크`라고 생각하는 것이 맞을 것 같습니다. 또한 nextjs를 개발하고 운영을 [Vercel](https://vercel.com/)이라는 회사가 하고 있는데 굉장히 업데이트도 빠르게 되고 React Core Team, Google Chrome Team과 협업을 통해서 앞으로 미래의 웹 개발에 있어서 많은 부분들을 주도하고 있다고 느끼고 있습니다.
 
 ![nextjs-introduction](https://user-images.githubusercontent.com/13966404/146634039-e27383f8-4190-4c99-a8d4-af7bdc05ec09.png)
@@ -33,7 +37,7 @@ excerpt: nextjs로 지금 현재 커머스를 개발하고 있습니다. 그런�
 
 &nbsp;그리고 SPA가 SSR보다 편리했던 인프라 운영 코스트 등도 Vercel이나 Netlify나 다른 Provider들을 통해서 기술들이 발전하면서 훨씬 덜 신경쓰고 서버를 띄울 수 있고 관리할 수 있게 되었기 때문에 예전보다는 운영 코스트에 대한 걱정을 조금은 덜 해도 되지 않을까라는 생각도 듭니다. 또한 요즘 가끔 보이는 BFF([Backend For Frontend](https://docs.microsoft.com/ko-kr/azure/architecture/patterns/backends-for-frontends))와 같은 개념을 적용해보는 것도 해보고 싶다는 생각이 많이 드네요.
 
-## nextjs 서비스 아키텍처 
+## nextjs 서비스 아키텍처
 
 &nbsp;처음에 nextjs로 SSR React앱을 구현 해야하는 상황에서 서비스를 어떻게 운영할 것인지에 대한 대안으로 몇 가지를 논의했었습니다. 물론 가장 쉽게 nextjs 앱을 띄우는 방법으로 vercel을 사용할 수 있지만, `회사 내부의 보안정책으로 인해서 무조건 aws 안에서만 구성을 해야만 했습니다. 아래에 적은 방법 이외에도 다른 방법들이 있겠지만 제가 아는 한도 안에서는 결국 마지막 선택사항은 아래 두 가지`였습니다.
 
@@ -50,12 +54,14 @@ excerpt: nextjs로 지금 현재 커머스를 개발하고 있습니다. 그런�
 ![서비스 구성도](https://user-images.githubusercontent.com/13966404/146634044-9ad7ea15-c093-4fdb-9cbb-fd6f165b914f.png)
 
 ### 1. [ECR(Elastic Container Registry)](https://aws.amazon.com/ko/ecr/) 구성하기
+
 &nbsp;ECS라는 이름에서도 알 수 있는 것처럼 `ECS는 Docker Container를 사용해서 서버를 띄우는 서비스이고 Docker Container를 띄우기 위해서는 Docker Image를 build하고 Docker Image를 Push하고 관리해야 합니다. Docker Image를 push하고 관리하는 서비스가 바로 ECR`입니다.
 
 ### 2. [ECS(Elastic Container Service)](https://aws.amazon.com/ko/ecs/)로 서버 띄우기
+
 &nbsp;ECR에 Docker Image를 올려 두었다면, 그 이후에 신경 써야할 부분은 바로 `ECS를 사용해서 ECR에 올라와있는 Docker Image를 사용해서 서버를 띄우는 일`입니다. ECS가 서버를 띄우는 방법으로는 두 가지가 있는데 바로 위에서도 언급했던 **Fargate**가 있고 아니면 많이들 알고 계실 **EC2**를 사용하는 방식입니다. 저는 스케일링이 더 수월한 Fargate를 이용했습니다.
 
-&nbsp;`ECS를 이해하기 위해서는 작업 정의(Task Definition)라는 용어를 이해해야 합니다. ECS는 서버를 띄울 때에 특정 작업을 기준으로 판단하는 데 그것이 작업 정의라고 부릅니다.` 작업 정의에는 서비스를 띄울 때에 `어떤 Docker Image를 사용할지 서버의 물리적인 스펙들을 어떻게 할지 등 서비스를 띄우기에 필요한 메타 정보들을 관리하는 것이라고 생각`하시면 됩니다. 
+&nbsp;`ECS를 이해하기 위해서는 작업 정의(Task Definition)라는 용어를 이해해야 합니다. ECS는 서버를 띄울 때에 특정 작업을 기준으로 판단하는 데 그것이 작업 정의라고 부릅니다.` 작업 정의에는 서비스를 띄울 때에 `어떤 Docker Image를 사용할지 서버의 물리적인 스펙들을 어떻게 할지 등 서비스를 띄우기에 필요한 메타 정보들을 관리하는 것이라고 생각`하시면 됩니다.
 
 ### 3. [ALB(application Load Balancer)](https://docs.aws.amazon.com/ko_kr/elasticloadbalancing/latest/application/introduction.html)
 
@@ -74,6 +80,7 @@ excerpt: nextjs로 지금 현재 커머스를 개발하고 있습니다. 그런�
 &nbsp;`마지막으로, 타겟그룹입니다. 타겟그룹은 alb에 들어온 요청들을 어디로 전달할 것인지에 대한 설정입니다.` alb는 이름에서도 알 수 있는 것처럼 load balencer 역할을 하는 것이고, 타겟그룹으로 묶여있는 서버들에게 적절하게 request들을 분배하는 역할을 합니다.
 
 ### 4. [CloudFront(CDN)](https://aws.amazon.com/ko/cloudfront/)
+
 &nbsp; `유저의 요청을 바로 alb로 연결할 수도 있지만, 캐싱을 활용하기 위해서 CloudFront를 최앞단에 배치했습니다.` cloudfront에는 origin이라는 개념이 있습니다. origin은 cloudfront를 통해서 들어오는 요청을 어디로 보낼 것인가라고 이해하면 됩니다. 예전에 cloudFront를 사용했을 때에는 s3 버킷을 origin만 사용할 수 있는줄 알았는데 요즘은 더 발전된 것인지 cloudfront의 origin으로 사용할 수 있는 종류들이 많아졌음을 배웠습니다. `cloudFront의 origin으로 s3 bucket을 사용할 수도 있고, alb도 사용할 수 있고, 그냥 단순히 domain을 연결할 수도 있습니다.` 모든 request를 alb를 통해서 ecs까지 도달하게 하지 않고, `단기간에 몰리는 traffic을 잘 관리하기 위해서 nextjs에서 cache-control을 설정하게 하고 cloudFront는 origin의 cache-control header를 보고 cache 정책`을 결정하도록 설정했습니다.
 
 &nbsp;cloudFront 설정을 하면서 하나 겪었던 이슈가 있었는데, nextjs의 response에 기본적으로 아무런 cache-control header가 설정이 안된 상태였는데 배포를 해도 배포된 새로운 버전의 response가 안내려온는 문제가 있었습니다. `cloudFront에서 origin의 header를 기준으로 cache를 하도록 해두고 origin의 response에 아무런 cache-control 내용이 없으면 기본적으로 무제한 캐싱을 사용합니다.` 그래서 캐시를 안하고 싶은 예를 들어 **html 요청**들은 cache를 하지 않도록 cache-control을 **no-cache**로 설정해야 합니다.
@@ -86,7 +93,7 @@ excerpt: nextjs로 지금 현재 커머스를 개발하고 있습니다. 그런�
 
 &nbsp;`위 내용은 aws를 기준으로 인프라를 구성할 때에 대한 설명이며, 다른 provider를 이용할 때에는 다른 단어들이 사용될 수 있습니다. 그래도 비슷한 역할들을 하는 구성요소들은 다들 있을 것이고 어떤 역할을 하는지에 대해서만 간단히 익히고, 단어들에 대해서 조금은 익숙해질 수 있는 기회였다면 좋겠습니다.` 저도 사실 네트워크, 인프라에 대한 지식이 거의 없으며 이번 작업을 하면서 단편적으로 익힌 내용들을 적었습니다. 혹시나 부족한 설명이나 잘못된 설명이 있다면 언제든지 피드백 부탁드립니다.
 
-## nextjs 서비스 배포하기 
+## nextjs 서비스 배포하기
 
 &nbsp; 이제 서비스 구성을 다했습니다. 그런데 우리는 계속 개발을 할 것이고 계속 서비스를 배포하고 새로운 기능을 유저에게 전달해야 합니다. 우리는 위와 같이 구성한 nextjs 앱을 어떻게 배포할 수 있을까요? 우선 ecs로 배포한 nextjs를 업데이트하기 위해서는 두 가지를 업데이트 해야 합니다.
 
@@ -102,9 +109,11 @@ excerpt: nextjs로 지금 현재 커머스를 개발하고 있습니다. 그런�
 ## nextjs 서비스 아키텍처 구성 중 트러블슈팅
 
 ### 회사 내부의 네트워크에 대한 이해
+
 &nbsp;회사 내부에서 사용하는 aws 계정이 하나가 아니라 여러개였고 서로 연관성을 가지고 있었습니다. 이 이야기를 이 글에 자세히 쓸 순 없지만, 관련된 내용을 파악하느라 여기저기 여쭤보고 네트워크나 보안망에 대한 이해가 조금 더 필요했었습니다.
 
 ### cloudfront origin, behavior에 대한 이해
+
 &nbsp; cloudfront를 생성해서 사용하면 가장 기본적으로 익혀야하는 부분이 origin과 behavior에 대한 이해입니다. 우선 `origin은 content의 원천`이라고 생각하시면 됩니다. 그리고 `behavior는 origin에 대한 통신을 할 때에 어떤 규칙을 가지고 통신할 지에 대한 설정`들이라고 생각하시면 됩니다.
 
 &nbsp; `예를 들어 origin은 예를 들어서 s3 bucket`이 될 수 있고, `behavior는 어떤 path에 이 설정을 적용할 것인지 캐시는 어떤 값을 기준으로 할지 혹은 http 요청이 오면 https로 redirect한다와 같은 설정들을 추가`할 수 있습니다.
@@ -115,7 +124,6 @@ excerpt: nextjs로 지금 현재 커머스를 개발하고 있습니다. 그런�
 - `cloudFront의 origin으로 특정 domain으로 설정했는데 cloudFront가 해당 origin에 접근해서 바로 response를 주는게 아니라 아예 301 상태 코드를 주면서 그 url로 redirect하는 문제`를 겪었습니다. 이는 `origin에서는 http만 받을 수 있도록 해두었는데, behavior에서 무조건 http to https redirect을 추가했었는데 두개의 설정이 충돌하면서 발생한 문제`였습니다. 위 두개의 설정에 대한 역할에 대해서 적절히 이해하고 있다면 저와 같은 실수를 여러분은 안하실 수 있을 것이라고 생각합니다.
 - 제가 구성하는 nextjs 서비스는 next/image와 같은 next가 제공해주는 image 컴포넌트를 이용하기 위해서는 querystring에 대한 접근이 필요했고, 인증을 위해서 cookie에 대한 접근이 필요했습니다. 그런데 `기본적으로 cloudFront는 path를 기준으로만 작동하기 때문에, origin에서 query나 cookie가 필요하다면 query, cookie등도 모두 넘겨 주어야 한다는 설정을 behavior에 설정`해주어야 합니다.
 - cloudFront을 통해서 들어오는 요청만을 보안적으로 허용하고 싶다면, [cloudfront ip ranges](https://docs.aws.amazon.com/ko_kr/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html)에서 실제로 cloudFront에서 사용하는 ip 대역들을 확인할 수 있습니다.
-
 
 ## 마무리
 

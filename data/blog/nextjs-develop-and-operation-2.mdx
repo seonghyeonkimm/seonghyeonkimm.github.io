@@ -1,49 +1,53 @@
 ---
 title: nextjs 서비스 개발부터 운영까지 (2) - nextjs 서비스 개발 경험 및 트러블슈팅
-date: 2021-12-18
-excerpt: nextjs로 지금 현재 커머스를 개발하고 있습니다. 그런데 어쩌다보니 많은 부분에 있어서 직접 셋업하는 과정에 참여했고, 그 과정에서 배웠던 내용들을 팀원들에게 공유하고자 다음 글을 기획했습니다.
+date: '2021-12-18'
+tags: ['nextjs']
+draft: false
+summary: nextjs로 지금 현재 커머스를 개발하고 있습니다. 그런데 어쩌다보니 많은 부분에 있어서 직접 셋업하는 과정에 참여했고, 그 과정에서 배웠던 내용들을 팀원들에게 공유하고자 다음 글을 기획했습니다.
 ---
 
 &nbsp;충분하지 않았을 수 있지만 Part1 이후로 우리는 이제 nextjs 앱을 aws에 ecs를 활용해서 구성하고 배포할 수 있게 되었습니다. 사실 Part1은 nextjs와 관련된 내용은 거의 없었고 aws 인프라를 어떻게 구성할 수 있는가에 대한 글에 가까웠습니다. 그래서 대제목과 어울리게 `이번 글에서는 구체적으로 nextjs로 개발하면서 어떤 이슈들에 부딪혔었고 어떻게 접근해왔었는지에 대한 이슈들에 대해서 이야기해보려고 합니다.` 간단하게 목차를 적어 보았습니다.
 
 ## 목차
-* [nextjs 한걸음 더 나아가기](#nextjs-한걸음-더-나아가기)
-* [nextjs와 같이 사용하고 있는 라이브러리들](#nextjs와-같이-사용하고-있는-라이브러리들)
-* [nextjs와 관련이 없을 수도 있는 트러블슈팅들](#nextjs와-관련이-없을-수도-있는-트러블슈팅들)
+
+- [nextjs 한걸음 더 나아가기](#nextjs-한걸음-더-나아가기)
+- [nextjs와 같이 사용하고 있는 라이브러리들](#nextjs와-같이-사용하고-있는-라이브러리들)
+- [nextjs와 관련이 없을 수도 있는 트러블슈팅들](#nextjs와-관련이-없을-수도-있는-트러블슈팅들)
 
 ## nextjs 한걸음 더 나아가기
 
 ### SSG, SSR, SPA에 대해서 조금 더 이해해보기
+
 &nbsp;`nextjs에서 어떤 페이지는 getServerSideProps를 사용해서 SSR을 하고, 어떤 페이지는 getStaticPaths와 getStaticProps를 사용하거나 아무것도 사용하지 않아서 pre-rendering을 해야할까와 같은 고민`을 nextjs 서비스를 개발하면서 초기에 했었는데요. 블로그와 같이 생성 시를 제외하고 데이터가 자주 변할 일이 없다면 `당연히 SSG가 모든 면에서 뛰어나기 때문에 next export를 사용해서 모두 빌드 시점에 html로 만들어두면 그것이 최선`이라고 생각합니다. 하지만 대부분 우리가 만들려고 하는 앱들은 그것보다 조금 더 다이나믹한 앱일 경우가 많습니다. 그러면, SSG를 사용할 수 없는 경우에는 어떤 전략을 취하는게 맞을까요?
 
 &nbsp;SSR이냐 SPA이냐를 결정해야 할 때 제가 고려한 요소는 `SEO와 FCP 두 가지였습니다.` 프론트 개발할 때에 사용할 수 있는 `접근 3가지가 두 요소에서 어떤 우위를 가지고 있는지를 표현해본다면 다음과 같을 것`입니다. 아래에서 SPA라고 표현한 것은 서버에서 데이터를 미리 준비하고 html을 만들지 않고 js가 로드되고 데이터를 가져와서 화면을 구성하는 방법을 표현한 것입니다.
 
-* `[SEO] SSG = SSR > SPA`
-* `[FCP] SSG >= SSR > SPA`
+- `[SEO] SSG = SSR > SPA`
+- `[FCP] SSG >= SSR > SPA`
 
 &nbsp;SSG를 할 수 없는 경우에 위의 요소만을 보았을 때에 우리는 항상 SSR을 하는 것이 맞지 않을까라고 생각할 수 있습니다. 하지만 `SSR이 SPA보다 항상 우위를 가질 수 있는가를 판단하기 위해서는 캐시를 할 수 있는지에 대한 조건도 고려를 해야합니다. 위의 비교는 SSR에서 html response를 생성하기 위한 remote server request에 걸리는 시간을 제외하고 비교했기 때문입니다.` 캐시를 하기 어려운 페이지는 다음 정도의 페이지들을 생각할 수 있습니다. 쿠키를 캐시키에 포함시키면 가능할 수 있겠지만 `유저별로 다르게 표시가 되어야할 페이지는 캐시를 하기가 어렵습니다.` 또는 `유저의 특정 액션에 따라서 사용되는 데이터가 자주 변경될 수 있는 페이지는 캐시하기가 어렵습니다.` 결론적으로 결국 nextjs로 개발할 때에 저는 다음과 같은 조건으로 SSR을 할 페이지들을 결정했습니다.
 
-* `SEO가 필요한 페이지이고, 캐시를 할 수 있다면 SSR` -> 상품목록 페이지 (1분 정도 캐시를 해도 크게 문제가 없을 수 있습니다.)
-* `SEO가 필요없거나 캐시를 하기 어려운 페이지라면 SPA` -> 상품 카트페이지 (유저마다 다르게 보여질 페이지이므로 SEO관련이 없고, 매번 자주 변하는 데이터들이기때문에 캐시를 하기 어렵습니다.)
+- `SEO가 필요한 페이지이고, 캐시를 할 수 있다면 SSR` -> 상품목록 페이지 (1분 정도 캐시를 해도 크게 문제가 없을 수 있습니다.)
+- `SEO가 필요없거나 캐시를 하기 어려운 페이지라면 SPA` -> 상품 카트페이지 (유저마다 다르게 보여질 페이지이므로 SEO관련이 없고, 매번 자주 변하는 데이터들이기때문에 캐시를 하기 어렵습니다.)
 
 ### 프로젝트의 구조를 어떻게 구성할 것인가
 
 &nbsp;`React로 서비스를 구성할 때에 어떻게 프로젝트의 구조 및 폴더 구조를 가져가면 좋은지에 대한 Best Practice같은 것들을 React에서 크게 제안하고 있는 내용은 따로 없습니다.` 그래서 다들 여러 가지 방법들을 사용하고 있습니다. 그래도 이번에 작업하면서 저는 어떤 접근을 취했는지에 대해서 공유 해보려고 합니다.
 
-* next config에서 `pageExtentions`를 `page.tsx`로 설정했습니다.
-  * 위 설정을 통해서 `pages`폴더 안에서 페이지에서 사용하는 컴포넌트들을 pages 폴더 안에 `최대한 가깝게 co-location시킬 수 있도록 접근`했습니다.
-  * 그리고 pages 폴더안에서 `components, hooks와 같은 기능적 폴더 분리를 하지 않았습니다.` 왜냐하면 하나의 페이지에 관련된 파일들이 많아봤자 보기에 불편할정도로 엄청 많아지지 않을 것이라고 생각했고(-> 아직까지는 그렇습니다. 하지만 나중에 어떤 상황에 의해서 변할 수도 있겠습니다.), 특히나 nextjs의 pages폴더는 pageExtensions를 사용했지만, route를 표현하는 폴더이기때문에 따로 폴더링을 하고 싶지 않았습니다.
-* `libs, utils 폴더를 사용했습니다.`
-  * 서비스를 개발하다보면 공통적으로 사용해야하는 utils성 함수들이 존재할 수 있는데요. `libs는 특정 라이브러리와 관련된 전역적인 utils 함수`들을 모아두었고, `utils 폴더에는 라이브러리와는 관계없지만 전역적으로 사용 함수`들을 모아 두었습니다. (ex. format하는 함수)
-* `domains라는 폴더를 사용했습니다.`
-  * `domains라는 폴더는 주문, 장바구니와 같이 하나의 페이지에만 국한되는 것이 아니라 여러 페이지에서 공통적으로 사용할 수 있는 로직들을 모아두는 폴더`를 생성해서 사용했습니다.
+- next config에서 `pageExtentions`를 `page.tsx`로 설정했습니다.
+  - 위 설정을 통해서 `pages`폴더 안에서 페이지에서 사용하는 컴포넌트들을 pages 폴더 안에 `최대한 가깝게 co-location시킬 수 있도록 접근`했습니다.
+  - 그리고 pages 폴더안에서 `components, hooks와 같은 기능적 폴더 분리를 하지 않았습니다.` 왜냐하면 하나의 페이지에 관련된 파일들이 많아봤자 보기에 불편할정도로 엄청 많아지지 않을 것이라고 생각했고(-> 아직까지는 그렇습니다. 하지만 나중에 어떤 상황에 의해서 변할 수도 있겠습니다.), 특히나 nextjs의 pages폴더는 pageExtensions를 사용했지만, route를 표현하는 폴더이기때문에 따로 폴더링을 하고 싶지 않았습니다.
+- `libs, utils 폴더를 사용했습니다.`
+  - 서비스를 개발하다보면 공통적으로 사용해야하는 utils성 함수들이 존재할 수 있는데요. `libs는 특정 라이브러리와 관련된 전역적인 utils 함수`들을 모아두었고, `utils 폴더에는 라이브러리와는 관계없지만 전역적으로 사용 함수`들을 모아 두었습니다. (ex. format하는 함수)
+- `domains라는 폴더를 사용했습니다.`
+  - `domains라는 폴더는 주문, 장바구니와 같이 하나의 페이지에만 국한되는 것이 아니라 여러 페이지에서 공통적으로 사용할 수 있는 로직들을 모아두는 폴더`를 생성해서 사용했습니다.
 
 ### react@next, react-dom@next의 Suspense 이슈
 
 &nbsp; `react@next, react-dom@next를 사용해야만 nextjs에서 suspense for data fetching을 이용할 수 있습니다.` 그런데, `suspense는 에러가 나면 바로 fallback으로 떨어지고 데이터가 준비가 되면 render를 진행하는 식의 동작방식을 가지고 있는데요. 이게 nextjs의 서버에서 작동할 떄에는 그냥 특정 컴포넌트에서 error가 발생하면, 그냥 fallback으로 떨어져 버리고 html생성을 안하고 그냥 빈 fallback을 return합니다.` 그래서 이런 경우가 있었습니다. `특정 컴포넌트가 useEffect가 아닌 useState에서 그냥 window 객체에 접근하고 있었고 서버에서 해당 컴포넌트를 render하려고 했을 때에 에러가 나면서 그냥 html을 서버에서 만들지 않고 null을 내려주어서 SSR이 되어야하는 페이지인데도 불구하고 SSR이 안된 경우가 있었다.` 아직은 사용자가 이런 실수를 하지 않도록 주의하는 것 밖에 방법을 찾진 못했는데, 더 좋은 방법이 분명히 있을 것 같다는 생각을 하고 있고 틈틈히 찾아볼 생각입니다.
 
 ```tsx
-import * as React from 'react';
+import * as React from 'react'
 
 // _app.tsx
 function MyApp() {
@@ -53,7 +57,7 @@ function MyApp() {
       {/* window는 서버에서 실행시 없는 객체이므로 에러가 나면서 서버 렌더링 시에 fallback인 null로 render된다. */}
       <div>{window.location.pathname}</div>
     </React.Suspense>
-  );
+  )
 }
 ```
 
@@ -107,8 +111,7 @@ function Page() {
 export default function MyApp({ Component, pageProps }) {
   // Use the layout defined at the page level, if available
   const Layout =
-    Component.Layout ??
-    (({ children }: { children: React.ReactNode }) => <>{children}</>);
+    Component.Layout ?? (({ children }: { children: React.ReactNode }) => <>{children}</>)
 
   return (
     <Layout>
@@ -122,9 +125,7 @@ import Layout from '../components/layout'
 import NestedLayout from '../components/nested-layout'
 
 export default function Page() {
-  return (
-    <div>Hello Word</div>
-  )
+  return <div>Hello Word</div>
 }
 
 Page.Layout = function Layout({ children }) {
@@ -133,16 +134,16 @@ Page.Layout = function Layout({ children }) {
       <nav>NavBar</nav>
       <main>{children}</main>
     </>
-  );
-};
+  )
+}
 ```
 
 ### .env, .env.local의 사용
 
 &nbsp;서비스를 개발하면서 dotenv와 같이 환경변수를 관리하는 라이브러리를 사용해보신 경험이 있으실 수도 있을텐데, nextjs에서는 관련 기능을 조금 더 디테일하게 제공합니다. 두 가지로 나눠서 사용할 수 있는데 관련된 내용을 간단하게 설명해보겠습니다. 다음 설명은 실제 [nextjs 공식문서](https://nextjs.org/docs/basic-features/environment-variables)에도 자세히 설명되어 있습니다.
 
-* `.env, .env.development, .env.staging과 같이 환경에 따라서 사용되는 환경변수를 지정할 수 있습니다. local이라는 suffix가 없는 경우는 repository에 포함되고 노출되어도 괜찮은 환경변수만을 포함시켜야합니다.`
-* `.env.local, .env.development.local과 같이 local이라는 단어가 포함이 되면 repository에 포함되지 않는 환경변수를 사용할 것임을 선언하는 것입니다. 실제 빌드시에 이런 값들은 Github secrets등을 이용해 빌드 시에만 추가해서 사용해야 합니다.`
+- `.env, .env.development, .env.staging과 같이 환경에 따라서 사용되는 환경변수를 지정할 수 있습니다. local이라는 suffix가 없는 경우는 repository에 포함되고 노출되어도 괜찮은 환경변수만을 포함시켜야합니다.`
+- `.env.local, .env.development.local과 같이 local이라는 단어가 포함이 되면 repository에 포함되지 않는 환경변수를 사용할 것임을 선언하는 것입니다. 실제 빌드시에 이런 값들은 Github secrets등을 이용해 빌드 시에만 추가해서 사용해야 합니다.`
 
 ### next/router를 사용하면서 주의해야할 것
 
@@ -152,7 +153,7 @@ Page.Layout = function Layout({ children }) {
 
 ```ts
 function useRouterQuery() {
-  const router = useRouter();
+  const router = useRouter()
   return React.useMemo(
     () =>
       router.isReady
@@ -164,16 +165,16 @@ function useRouterQuery() {
                 pathname: window.location.pathname,
               }),
               ...toSearchObject(new URLSearchParams(window.location.search)),
-            };
+            }
           })(),
-    [router.asPath, router.isReady, router.query],
-  );
+    [router.asPath, router.isReady, router.query]
+  )
 }
 ```
 
 ### next/image를 사용하면서 주의해야할 것
 
-&nbsp;nextjs에서는 next/image를 통해서 이미지를 optimize할 수 있는 기능을 제공합니다. `결론적으로 저는 현재 unoptimized라는 props를 추가해서 optimize하는 기능을 사용하고 있지는 않습니다.` `image를 optimize하는 작업과 html을 서빙하는 일을 하나의 서버에게 맡기기에는 꽤 무리가 있어 보였고, cache가 잘되지 않는다면 서비스 운영에 큰 영향을 끼칠 수 있다고 생각했기 때문입니다. 왜냐하면 이미지가 로드가 조금 오래걸리는 것보다 html이 생성이 안되는게 훨씬 더 크리티컬한 오류이기 때문입니다.` 실제로 캐시 정책이 제대로 작동하지 않는 상황에서 next/image의 optimize를 사용하면서 nextjs 서버의 cpu가 100%를 찍는 것까지 목격했었습니다. `그래서 이미지 최적화에 대한 작업은 서버가 이미지를 업로드할 때에 잘 해줄 것을 기대하고 믿으며 작업하고 있습니다.` 실제로 nextjs의 image optimize 기능을 production에서 사용할 때에는 html 서빙하는 서버에서 직접 이 일들을 하기 보다는 다른 provider들을 사용하는게 맞을 것 같은데 다른 분들은 어떻게 접근하고 계신지 궁금하긴 합니다. vercel에서 배포해서 사용했을 때에는 따로 optimize하고 서빙해주는 worker같은 것들이 돌아가는 것처럼 확인됩니다. 
+&nbsp;nextjs에서는 next/image를 통해서 이미지를 optimize할 수 있는 기능을 제공합니다. `결론적으로 저는 현재 unoptimized라는 props를 추가해서 optimize하는 기능을 사용하고 있지는 않습니다.` `image를 optimize하는 작업과 html을 서빙하는 일을 하나의 서버에게 맡기기에는 꽤 무리가 있어 보였고, cache가 잘되지 않는다면 서비스 운영에 큰 영향을 끼칠 수 있다고 생각했기 때문입니다. 왜냐하면 이미지가 로드가 조금 오래걸리는 것보다 html이 생성이 안되는게 훨씬 더 크리티컬한 오류이기 때문입니다.` 실제로 캐시 정책이 제대로 작동하지 않는 상황에서 next/image의 optimize를 사용하면서 nextjs 서버의 cpu가 100%를 찍는 것까지 목격했었습니다. `그래서 이미지 최적화에 대한 작업은 서버가 이미지를 업로드할 때에 잘 해줄 것을 기대하고 믿으며 작업하고 있습니다.` 실제로 nextjs의 image optimize 기능을 production에서 사용할 때에는 html 서빙하는 서버에서 직접 이 일들을 하기 보다는 다른 provider들을 사용하는게 맞을 것 같은데 다른 분들은 어떻게 접근하고 계신지 궁금하긴 합니다. vercel에서 배포해서 사용했을 때에는 따로 optimize하고 서빙해주는 worker같은 것들이 돌아가는 것처럼 확인됩니다.
 
 > Vercel makes it easy to accomplish ideal loading times and prevent layout shifts for images when deploying Next.js applications by providing you with a built-in next/image component that automatically optimizes your images on demand and serves them from our globally distributed Edge Network.
 
@@ -185,7 +186,6 @@ function useRouterQuery() {
 
 &nbsp;Part1에서도 말했던 것처럼 `cloudFront는 cache-control header가 없으면 무제한으로 캐싱을 한다. 그렇기 때문에 nextjs에서 아무런 설정을 안하면 html response에 대해서 무한 캐싱을 해버리기때문에 html response에 대해서 캐시를 아예 하지 않도록 아래와 같은 코드 추가가 필요했다.` 아래와 같이 추가하더라도 assets(js, css)에 대한 cache-control은 nextjs에서 알아서 무제한으로 override해주니 그것에 대해서는 걱정 안해도 된다.
 
-
 ```js
 export default {
   headers: () => {
@@ -196,8 +196,8 @@ export default {
           {
             key: 'Cache-Control',
             value: 'no-cache,no-store,max-age=0,must-revalidate',
-          }
-        ]
+          },
+        ],
       },
     ]
   },
@@ -218,8 +218,8 @@ export default {
 
 &nbsp;react-query를 애용해왔지만, SSR에서 사용한 것은 이번이 처음이었는데요. SSR 관련된 API나 docs가 존재한다는 생각을 하지 못하고 무작정 SPA에서 사용하던 방식대로 react-query를 사용하다가 몇가지 시행착오를 겪었습니다.
 
-* 첫 번째로는 **new QueryClient()를 어떤 식으로 생성해서 사용해야하는가에 대한 문제**입니다. `전역적으로 new QueryCLient()를 작성해두고 사용해도 SPA를 사용할 때에는 user의 request마다 새로운 queryClient가 만들어지고 사용될 것이 보장되었지만, nextjs에서 전역적으로 선언한 변수는 유저 request별로 공유될 수 있는 가능성이 있기 때문에 매번 _app.tsx파일에서 new QueryClient()를 새로 만들어 줘야 합니다.` 위 내용은 react-query ssr 관련 문서에 자세히 작성되어있습니다.
-* 두 번째로는 getServerSideProps에서 이미 fetch해온 정보를 어떻게 컴포넌트에 작성되어 있는 **useQuery**에서 바로 사용할 수 있게 만들 수 있을까에 대한 고민이었습니다. 이것 또한 react-query의 ssr 문서를 보면 `getServerSideProps에서 prefetchQuery를 하고 _app.tsx에서 <Hydrate />를 사용하는 방식이 소개`되어 있었는데 관련 내용을 읽지 못했었고 나중에야 발견하고 적용했던 경험을 했습니다.
+- 첫 번째로는 **new QueryClient()를 어떤 식으로 생성해서 사용해야하는가에 대한 문제**입니다. `전역적으로 new QueryCLient()를 작성해두고 사용해도 SPA를 사용할 때에는 user의 request마다 새로운 queryClient가 만들어지고 사용될 것이 보장되었지만, nextjs에서 전역적으로 선언한 변수는 유저 request별로 공유될 수 있는 가능성이 있기 때문에 매번 _app.tsx파일에서 new QueryClient()를 새로 만들어 줘야 합니다.` 위 내용은 react-query ssr 관련 문서에 자세히 작성되어있습니다.
+- 두 번째로는 getServerSideProps에서 이미 fetch해온 정보를 어떻게 컴포넌트에 작성되어 있는 **useQuery**에서 바로 사용할 수 있게 만들 수 있을까에 대한 고민이었습니다. 이것 또한 react-query의 ssr 문서를 보면 `getServerSideProps에서 prefetchQuery를 하고 _app.tsx에서 <Hydrate />를 사용하는 방식이 소개`되어 있었는데 관련 내용을 읽지 못했었고 나중에야 발견하고 적용했던 경험을 했습니다.
 
 &nbsp;따로 경험은 없지만, nextjs를 만든 vercel에서 react-query 역할을 하는 swr이라는 라이브러리를 만들었는데, nextjs와 swr가 훨씬 궁함이 잘맞을 수도 있겠다는 생각이 들긴 했지만, 회사 내부에서 react-query를 더 많이 사용하고 있기에 이번 nextjs 프로젝트에서도 react-query를 사용하게 되었습니다. 다음에는 swr도 사용해볼 기회가 있다면 해보면 또 다른 좋은 경험을 할 수 있지 않을까도 생각해봤습니다.
 
@@ -253,29 +253,29 @@ function MyApp({ Component, pageProps }) {
 
 ```tsx
 import { O } from 'ts-toolbelt'
-import type { components, paths } from '~/types/generated';
+import type { components, paths } from '~/types/generated'
 
-export type OAIMethods = 'get' | 'put' | 'post' | 'delete' | 'patch';
+export type OAIMethods = 'get' | 'put' | 'post' | 'delete' | 'patch'
 
 // (O.Selectkeys 사용) 특정 OAIMehotds에 해당하는 path keys들의 타입
 export type OAIPathKeysByMethod<TMethod extends OAIMethods> = O.SelectKeys<
   paths,
   Record<TMethod, unknown>
->;
+>
 // ex) get endpoint를 가지고 있는 모든 endpoint들
-type GetPathKeys = OAIPathKeysByMethod<'get'>;
+type GetPathKeys = OAIPathKeysByMethod<'get'>
 
 // (O.Path 사용) 특정 path에 해당하는 pageParams들을 가져오는 type
-export type OAIPathParameters<
-  TPath extends OAIPathKeys,
-  TMethod extends OAIMethods,
-> = O.Path<paths, [TPath, TMethod, 'parameters', 'path']>;
+export type OAIPathParameters<TPath extends OAIPathKeys, TMethod extends OAIMethods> = O.Path<
+  paths,
+  [TPath, TMethod, 'parameters', 'path']
+>
 
 // (O.Path 사용) 특정 path에 해당하는 queryString들을 가져오는 type
-export type OAIQueryParameters<
-  TPath extends OAIPathKeys,
-  TMethod extends OAIMethods,
-> = O.Path<paths, [TPath, TMethod, 'parameters', 'query']>;
+export type OAIQueryParameters<TPath extends OAIPathKeys, TMethod extends OAIMethods> = O.Path<
+  paths,
+  [TPath, TMethod, 'parameters', 'query']
+>
 ```
 
 ### react-query, immer를 사용해서 optimistic update 구현하기
@@ -305,27 +305,23 @@ export type OAIQueryParameters<
 
 ```tsx
 const ModalAppBar = ({ title }) => {
-  const router = useRouter();
-  const [showBackButton, setShowBackButton] = React.useState(false);
+  const router = useRouter()
+  const [showBackButton, setShowBackButton] = React.useState(false)
 
   React.useEffect(() => {
     const updateShowBackButton = () => {
-      setShowBackButton((window.history.state?.idx || 0) > 0);
-    };
+      setShowBackButton((window.history.state?.idx || 0) > 0)
+    }
 
-    router.events.on('routeChangeComplete', updateShowBackButton);
-    return () => router.events.off('routeChangeComplete', updateShowBackButton);
-  }, [router.events]);
+    router.events.on('routeChangeComplete', updateShowBackButton)
+    return () => router.events.off('routeChangeComplete', updateShowBackButton)
+  }, [router.events])
 
   return (
     <nav>
       <div>
         {showBackButton && (
-          <button
-            type="button"
-            className={styles.left}
-            onClick={() => router.back()}
-          >
+          <button type="button" className={styles.left} onClick={() => router.back()}>
             <MoveBack />
           </button>
         )}
@@ -337,8 +333,8 @@ const ModalAppBar = ({ title }) => {
         </button>
       </div>
     </nav>
-  );
-};
+  )
+}
 ```
 
 ## nextjs와 관련이 없을 수도 있는 트러블슈팅들
