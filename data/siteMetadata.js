@@ -2,7 +2,7 @@ const siteMetadata = {
   title: 'Seonghyeon Kim',
   author: 'Seonghyeon Kim',
   headerTitle: 'Seonghyeon Kim',
-  description: 'Develop to solve problems',
+  description: 'Develop to solve problems and for fun',
   language: 'ko-kr',
   theme: 'system', // system, dark or light
   siteUrl: 'https://seonghyeonkimm.github.io/',
