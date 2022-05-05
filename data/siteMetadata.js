@@ -1,23 +1,24 @@
-// TODO: siteMetadata 채우기
 const siteMetadata = {
   title: 'Seonghyeon Kim',
   author: 'Seonghyeon Kim',
   headerTitle: 'Seonghyeon Kim',
   description: 'Usually develop web application',
-  language: 'en-us',
+  language: 'ko-kr',
   theme: 'system', // system, dark or light
   siteUrl: 'https://seonghyeonkimm.github.io/',
   siteRepo: 'https://github.com/seonghyeonkimm/seonghyeonkimm.github.io',
+  // @see https://www.reshot.com/free-svg-icons/item/lotus-MSCKYWU8PD/
   siteLogo: '/static/images/logo.png',
   image: '/static/images/avatar.png',
   socialBanner: '/static/images/twitter-card.png',
   email: 'impressor7@gmail.com',
-  github: 'https://github.com',
-  twitter: 'https://twitter.com/Twitter',
-  facebook: 'https://facebook.com',
-  youtube: 'https://youtube.com',
-  linkedin: 'https://www.linkedin.com',
-  locale: 'en-US',
+  github: 'https://github.com/seonghyeonkimm',
+  twitter: 'https://twitter.com/seonghyeon___',
+  facebook: '',
+  youtube: '',
+  linkedin: 'https://www.linkedin.com/in/seonghyeon-kim-328757b7/',
+  locale: 'ko-KR',
+  // TODO: check contents below
   analytics: {
     // If you want to use an analytics provider you have to add it to the
     // content security policy in the `next.config.js` file.
