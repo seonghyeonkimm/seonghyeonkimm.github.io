@@ -60,6 +60,9 @@ const siteMetadata = {
       // please provide a link below to your custom theme css file.
       // example: https://giscus.app/themes/custom_example.css
       themeURL: '',
+      lang: 'ko',
+      inputPosition: 'top',
+      loading: 'lazy',
     },
     utterancesConfig: {
       // Visit the link below, and follow the steps in the 'configuration' section

@@ -28,6 +28,7 @@ const Giscus = () => {
       metadata,
       inputPosition,
       lang,
+      loading,
     } = siteMetadata.comment.giscusConfig
 
     const script = document.createElement('script')
@@ -42,6 +43,7 @@ const Giscus = () => {
     script.setAttribute('data-input-position', inputPosition)
     script.setAttribute('data-lang', lang)
     script.setAttribute('data-theme', commentsTheme)
+    script.setAttribute('data-loading', loading)
     script.setAttribute('crossorigin', 'anonymous')
     script.async = true
 
