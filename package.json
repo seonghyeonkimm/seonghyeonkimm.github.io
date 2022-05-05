@@ -3,7 +3,6 @@
   "version": "1.5.3",
   "private": true,
   "scripts": {
-    "start": "next dev",
     "dev": "next dev",
     "build": "next build",
     "postbuild": "npm run sitemap && npm run rss",
