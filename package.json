@@ -12,7 +12,8 @@
     "serve": "next start",
     "analyze": "cross-env ANALYZE=true next build",
     "lint": "next lint --fix --dir pages --dir components --dir lib --dir layouts --dir scripts",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "deploy": "next build && next export && touch docs/.nojekyll && git add . && git commit -m '[deploy] Update docs folder' && git push origin main"
   },
   "dependencies": {
     "@fontsource/inter": "4.5.10",
