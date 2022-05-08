@@ -36,7 +36,7 @@ bot의 요청이라면 puppeteer가 브라우저를 띄워서 실제 html이 다
 작업을 하다 보니 경험적으로 느낀 것은 로컬 머신에 있는 index.html을 내려주게 되면 배포 과정에서 실제 server 코드에 대한 배포가 필요 없는 경우에도 배포를 해야 할 수 있기 때문에
 빌드된 결과물을 s3에 올려두고 cloudFront에서 서빙하는 것이 더 빠른 개발과 배포에 좋을 듯 하다. 실제로 위에 언급한 방식을 간단히 그림을 그려 보면 다음과 같다.
 
-![nginx-react-prerender](../assets/first-react-ssr-diagram.png)
+![nginx-react-prerender](/static/images/first-react-ssr-diagram.png)
 
 &nbsp; 실제 infra까지 구성한 것은 아니지만, client와 server를 나누어서 직접 로컬에서 간단히 작동하는 수준까지만 작업해보았다.
 연습 삼아 작성해본 코드는 위에 링크 혹은 이 [repository](https://github.com/seonghyeonkimm/nginx-react-prerender)에서 확인할 수 있다. client라는 폴더에는
@@ -67,7 +67,5 @@ express서버 코드와 bot을 판별해 index.html을 그냥 내려줄 지 아�
 
 ## 참고한 글
 
-- <a href="https://developers.google.com/web/tools/puppeteer/articles/ssr">
-    https://developers.google.com/web/tools/puppeteer/articles/ssr
-  </a>
-- <a href="https://github.com/prerender/prerender">https://github.com/prerender/prerender</a>
+- https://developers.google.com/web/tools/puppeteer/articles/ssr
+- https://github.com/prerender/prerender
