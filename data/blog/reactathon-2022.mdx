@@ -1,0 +1,35 @@
+---
+title: Reactathon 2022에서 흥미로웠던 발표
+date: '2022-06-01'
+tags: ['react', 'remix']
+draft: false
+summary: Reactathon에서 가장 감명 깊었던 두 가지 영상에 대한 나의 이해를 정리한다.
+---
+
+&nbsp;Reactathon 2022에서 모든 영상을 살펴보지는 못했지만, 보았던 영상들 중에서 감명 깊었던 영상들에서 간단히 소개하고 스스로 이해한 내용을 정리해보려고 합니다. 몇 개의 영상을 보았지만, 그중에서 두 가지 영상이 가장 감명 깊었습니다.
+
+&nbsp;첫 번째는 react-router, remix 등 react 생태계에서 아주 유명한 오픈 소스를 만든 Ryan Florence의 [When To Fetch: Remixing React Router](https://www.youtube.com/watch?v=95B8mnhzoCM)입니다.
+
+### TL;DR
+
+* 브라우저에서 react 서비스를 렌더링하기 전에 다음과 같은 세 가지 과정이 필요합니다. **initiating fetches**, **reading results**, **rendering fallbacks**. 그리고 위 과정들은 coupled되어 있으면 TTI(Time to Interactive)까지 도달하는 데까지 시간이 오래 걸릴 수 있습니다.
+* React 18이 나오면서 RSC(React Server Component), Streaming HTML, Suspense가 나오면서 Render as you fetch 패턴을 구현할 수 있다고 많이들 오해하고 있다. 하지만 React는 Rendering Library이므로 위에 언급한 세 가지 중에 rendering fallback만을 책임져 준다. 그러므로 언제 fetch를 실행할지 결과에 접근할지에 대해서는 React 18이 해결해주고 있지는 않다.
+* 처음에 Remix에 구현되었고 그 구현체를 react-router v6로 옮기게 되었는데, nested되어있건 그렇지 않던 간에 loader라는 prop에 fetching 로직을 작성할 수 있고, react-router 내부에서 fetch와 render를 동시에 실행시킬 수 있게 함으로써 waterfall 방식으로 앱이 로드되는 것이 아니라 parallel하게 fetching과 rendering이 일어날 수 있으므로, 훨씬 더 좋은 퍼포먼스를 가질 수 있다고 설명하고 있습니다.
+* 또한 Suspense + Streaming을 통해서 최대한 빠른 시간 안에 Document를 브라우저에 전달함으로써도 퍼포먼스 개선을 이룰 수 있다.
+* 결국 퍼포먼스 개선을 위해서 중요한 두 가지의 포인트는 **parallelize**와 **unblocking**이고, Render as you fetch 또한 위 포인트를 개선하기 위한 패턴이다.
+ 
+<div style={{ paddingBottom: "56.25%", position: "relative", marginTop: "24px" }}>
+  <iframe width="100%" height="100%" style={{ position: "absolute", top: 0, bottom: 0, right: 0, left: 0 }} src="https://www.youtube.com/embed/95B8mnhzoCM" title="YouTube video player" frameBorder="0" allow="accelerometer; autoPlay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+</div>
+
+&nbsp;두 번째는 제목에 이끌려 감상하게 되었던 [Goodbye, useEffect: David Khourshid](https://youtu.be/HPoC-k7Rxwo)입니다. 
+
+### TL;DR
+
+* 흔히들 react hooks 시대 이전부터 react 개발을 해오던 사람들이 **useEffect를 componentDidMount, componentDidUpdate, componentUnmount 등의 대체재라고 생각하지만, useEffect 자체는 설계된 철학자체가 lifecycle이 아니고, synchronization을 위한 API**입니다.
+* 위와 같은 설계된 내용에 대해서 정확히 인지할 수 있게 하기 위해서 react 18에서는 strict mode에 strict effect가 적용되면서 **개발환경에서는 useEffect는 mount -> unmount -> mount 과정을 거치게 되는 개선도 포함**이 되었다.
+* useEffect를 컴포넌트의 상태를 sync하기 위한 목적이 아닌 때때로 개발자들은 특정 action을 실행시키기 위해서 useEffect를 사용한다. 위와 같은 패턴을 action effect라고 명명해보자. **action effect는 실제로는 useEffect 안에 존재해야하는 코드들이 아니고 우선은 event handler 혹은 state management 관련 로직들과 함께 존재하는 것이 더 적절하다.** state management library로 발표자는 xstate를 설명해주고 있다.
+
+<div style={{ paddingBottom: "56.25%", position: "relative", marginTop: "24px" }}>
+  <iframe width="100%" height="100%" style={{ position: "absolute", top: 0, bottom: 0, right: 0, left: 0 }} src="https://www.youtube.com/embed/HPoC-k7Rxwo" title="YouTube video player" frameBorder="0" allow="accelerometer; autoPlay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+</div>
