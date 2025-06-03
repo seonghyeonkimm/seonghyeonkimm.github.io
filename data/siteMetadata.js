@@ -61,7 +61,7 @@ const siteMetadata = {
       // example: https://giscus.app/themes/custom_example.css
       themeURL: '',
       lang: 'ko',
-      inputPosition: 'top',
+      inputPosition: 'bottom',
       loading: 'lazy',
     },
     utterancesConfig: {
