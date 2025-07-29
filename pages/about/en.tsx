@@ -5,7 +5,7 @@ import { allAuthors } from 'contentlayer/generated'
 const DEFAULT_LAYOUT = 'AuthorLayout'
 
 export const getStaticProps = async () => {
-  const author = allAuthors.find((p) => p.slug === 'default')
+  const author = allAuthors.find((p) => p.slug === 'en')
   return { props: { author } }
 }
 
