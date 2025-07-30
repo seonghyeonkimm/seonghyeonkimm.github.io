@@ -13,7 +13,7 @@ const siteMetadata = {
   socialBanner: '/static/images/og-card.png',
   email: 'impressor7@gmail.com',
   github: 'https://github.com/seonghyeonkimm',
-  twitter: 'https://twitter.com/seonghyeon___',
+  twitter: 'https://x.com/seonghyeon___',
   facebook: '',
   youtube: '',
   linkedin: 'https://www.linkedin.com/in/seonghyeon-kim-328757b7/',

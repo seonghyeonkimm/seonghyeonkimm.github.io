@@ -1,16 +1,32 @@
+/** biome-ignore-all lint/a11y/useValidAnchor: <explanation> */
 import SocialIcon from '@/components/social-icons'
 import Image from '@/components/Image'
 import { PageSEO } from '@/components/SEO'
 import { ReactNode } from 'react'
 import type { Authors } from 'contentlayer/generated'
+import { useRouter } from 'next/router'
+import Link from 'next/link'
 
 interface Props {
   children: ReactNode
   content: Omit<Authors, '_id' | '_raw' | 'body'>
 }
 
+const RESUME_TEXT = {
+  ko: {
+    korean: '🇰🇷 한국어',
+    english: '🇺🇸 영어',
+  },
+  en: {
+    korean: '🇰🇷 Korean',
+    english: '🇺🇸 English',
+  },
+}
+
 export default function AuthorLayout({ children, content }: Props) {
-  const { name, avatar, occupation, company, email, twitter, linkedin, github } = content
+  const { name, avatar, occupation, company, email, x, linkedin, github } = content
+  const router = useRouter()
+  const languageType = router.pathname.includes('/about/ko') ? 'ko' : 'en'
 
   return (
     <>
@@ -37,7 +53,21 @@ export default function AuthorLayout({ children, content }: Props) {
               <SocialIcon kind="mail" href={`mailto:${email}`} />
               <SocialIcon kind="github" href={github} />
               <SocialIcon kind="linkedin" href={linkedin} />
-              <SocialIcon kind="twitter" href={twitter} />
+              <SocialIcon kind="x" href={x} />
+            </div>
+            <div className="pt-4">
+              <div className="flex space-x-2">
+                <Link passHref href="/about/ko">
+                  <a className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                    {RESUME_TEXT[languageType].korean}
+                  </a>
+                </Link>
+                <Link passHref href="/about/en">
+                  <a className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                    {RESUME_TEXT[languageType].english}
+                  </a>
+                </Link>
+              </div>
             </div>
           </div>
           <div className="prose max-w-none pt-8 pb-8 dark:prose-dark xl:col-span-2">{children}</div>
