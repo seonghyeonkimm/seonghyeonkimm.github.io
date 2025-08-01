@@ -50,7 +50,7 @@ export default function AuthorLayout({ children, content }: Props) {
                 </Link>
                 <Link passHref href="/about/en">
                   <a className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
-                    🇺🇸 영어
+                    🇺🇸 English
                   </a>
                 </Link>
               </div>
