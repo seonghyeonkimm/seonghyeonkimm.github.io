@@ -40,10 +40,28 @@ export default function AuthorLayout({ children, content }: Props) {
                 <div className="text-gray-600">
                   {occupation} · {company}
                 </div>
-                <div className="text-sm text-gray-600 print:mt-1">Email: {email}</div>
+
+                <div className="mt-2">
+                  <div className="text-sm text-gray-600 print:mt-1">
+                    Email:{' '}
+                    <a
+                      href={`mailto:${email}`}
+                      className="underline"
+                      aria-label={`Send email to ${email}`}
+                    >
+                      {email}
+                    </a>
+                  </div>
+                  <div className="text-sm text-gray-600 print:mt-1">
+                    Phone:{' '}
+                    <a href="tel:01094562396" className="underline" aria-label="Call 010-9456-2396">
+                      010-9456-2396
+                    </a>
+                  </div>
+                </div>
 
                 {/* Social Icons - Below email */}
-                <div className="print:mt-2 print:flex print:items-center print:gap-2">
+                <div className="mt-3 print:flex print:items-center print:gap-2">
                   <SocialIcon kind="github" href={github} size={4} />
                   <SocialIcon kind="linkedin" href={linkedin} size={4} />
                   <SocialIcon kind="x" href={x} size={4} />
