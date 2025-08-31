@@ -53,24 +53,24 @@ github: https://github.com/seonghyeonkimm
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">배경</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - GraphQL 서버의 단순 500 에러 카운팅 기반 알림 시스템
-        - 400번대 에러의 500번대 잘못된 반환 사례 존재
-        - <b>트래픽 증가 시 무의미한 알럿 발생</b>으로 <b>팀 내 에러 알림 신뢰도 하락</b>
+        - 단순히 GraphQL 서버에서 통신하는 서버들의 response status가 500인 경우만 카운트하고 그게 일정 수를 넘어가면 알림을 주고 있는 상황이 있었어요.
+        - 또한, 통신하고 있는 서버들이 400번대의 에러들을 500번대의 에러로 response해주는 경우도 있었어요.
+        - <b>트래픽이 올라가면 알럿이 당연히 발생할 수 밖에 없는 상황</b>이었고, 팀 내에서 <b>에러 알림이 울려도 심각하게 생각하지 않는 상황</b>에 처해있었어요.
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">접근</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 잘못된 에러 코드 반환 케이스 수집 및 서버팀 개선 요청
-        - <b>error는 0 수렴, warn은 추이 대비 급증 체크</b> 방식으로 알럿 재설정
+        - 통신하는 서버에서 <b>400번대의 에러를 500번대의 에러로 내려주는 경우들을 점검하고 수집해서 서버팀에 개선을 요청</b>했어요.
+        - <b>error 로그는 0으로 수렴</b>해야되는 값이고, <b>warn은 최근 추이보다 훨씬 더 많이 튀지 않는지 체크하는 방향으로 알럿 설정들을 점검</b>했어요.
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">결과</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - BFF 관련 <b>에러 알림 신뢰도 상승</b>
-        - 에러 레벨별 관리 기준 체계화
-        - <b>신뢰 없는 알림은 알림이 없는 것보다 해롭다</b>는 교훈
+        - 슬랙에 발송되는 BFF 관련 <b>에러 알림에 대한 신뢰도가 상승</b>했어요.
+        - 각 레벨의 에러들을 어떻게 바라보고 관리해야할지 기준을 체계적으로 정리할 수 있었어요.
+        - <b>신뢰가 없는 에러 알림은 에러 알림이 없는 것보다 더 나쁘다</b>는 것을 한번 더 배울 수 있는 시간이었어요.
       </div>
     </div>
   </div>
@@ -82,22 +82,22 @@ github: https://github.com/seonghyeonkimm
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">배경</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 광고주들의 <b>고객 정보 수집을 위한 아웃링크 광고 사용</b>
-        - 당근앱 보유 정보(이름, 전화번호)의 중복 입력 문제
-        - 광고 전환율 저하 문제 발생
+        - 광고주들이 <b>고객의 정보를 수집하기 위해서 아웃링크 광고를 사용</b>하고 있었어요.
+        - 아웃링크로 이동해서 유저들이 고객 정보를 제출하기 위해서 <b>이미 당근앱에서 알고 있는 정보들을 유저들이 직접 다시 입력을 해야하는 상황</b>이었어요.
+        - <b>광고 전환율에 악영향을 끼치고</b> 있는 상황이었어요.
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">접근</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 당근 보유 정보를 prefill해주는 <b>리드폼 광고 상품 개발</b>
+        - 당근에서 내부적으로 가지고 있는 정보를 prefill해서 고객 정보들을 수집할 수 있는 <b>리드폼이라는 새로운 광고 상품을 개발</b>했어요.
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">결과</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 리드폼 광고가 아웃링크 대비 <b>높은 전환율 기록</b>
-        - use-funnel 라이브러리를 활용한 <b>funnel 코드 응집성 확보</b>
+        - 광고주들이 고객 정보 수집을 위해서 아웃링크가 아니라 리드폼을 활용할 수 있게 되었어요. 그리고 <b>리드폼 광고가 기존 아웃링크 광고와 비교했을 때 더 좋은 전환율을 기록</b>하고 있어요.
+        - <b>funnel과 관련된 코드들의 응집성을 지키기 위해서 어떻게 코드를 관리하면 좋은지 고민</b>했고, use-funnel 라이브러리를 활용하고 참고해서 코드를 작성했어요.
       </div>
     </div>
   </div>
@@ -109,25 +109,26 @@ github: https://github.com/seonghyeonkimm
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">배경</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 작은 예산으로 인한 <b>입찰 실패 및 예산 미소진 문제</b>
-        - 소상공인 광고주들의 데이터 분석 어려움
-        - AI 활용한 솔루션 필요성 대두
+        - 광고주들이 <b>너무 작은 예산을 입력</b>해서 광고 입찰의 기회도 얻지 못하고 <b>예산을 소진하지 못하고</b> 있었어요.
+        - 광고 상세에 <b>설정값, 퍼포먼스 관련 정보들을 제공</b>해도 <b>소상공인 광고주들은 해당 정보들을 분석하기 어려워</b>했어요.
+        - AI를 활용하면 창의적이고 다양한 답변을 줄 수 있지 않을까하는 내부적인 논의가 있었어요.
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">접근</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - AI 및 규칙 기반 광고 성과 분석 기능 개발
-        - 동종업계 <b>상위 광고주 데이터 활용한 맞춤형 분석 제공</b>
-        - 추천 설정 <b>원클릭 적용 UX 구현</b>
+        - 광고의 설정값 및 퍼포먼스 수치를 <b>AI 및 내부적으로 정한 규칙에 따라서 분석하고 결과를 제공하는 기능을 개발</b>했어요.
+        - AI를 활용할 때 프롬프트를 작성하고 개선해나가면서 최대한 유저들에게 도움이 되는 답변을 제공할 수 있도록 노력했어요.
+        - AI에 단순히 프롬프트만 전달하는 것이 아니라 <b>동종업계의 상위 광고주들의 정보들을 활용하여 최대한 플랫폼에서 효과를 볼 수 있는 방향으로 성과 분석</b>을 제공하려고 노력했어요.
+        - 성과 분석에서 <b>추천하는 액션들을 최대한 편하게 적용시킬 수 있도록 UX를 설계</b>했어요.
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">결과</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 예산 미소진 문제 개선
-        - 프롬프트 엔지니어링 학습 기회
-        - 비동기 응답에 대한 최적 UX 구현 (로딩/알림 처리)
+        - 기존에 목표했던 성과 분석을 통한 <b>추천 액션 적용을 유도함으로써 예산 미소진을 유발하는 작은 예산 입력을 방지</b>하는 데에 개선을 이끌어냈어요.
+        - 프롬프트 작성에 참여하면서 <b>프롬프트 작성 노하우를 배울 수 있는 기회를 얻을 수</b> 있었어요.
+        - 서버의 응답이 비동기로 오는 형태였기 때문에, 관련해서 어떻게 UX로 풀 수 있을지 고민하면서 작업했고, <b>로딩과 알림을 적절히 처리하여 최적의 UX를 만들어내려고 노력</b>했어요.
       </div>
     </div>
   </div>
@@ -139,26 +140,26 @@ github: https://github.com/seonghyeonkimm
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">배경</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 웹과 웹뷰의 분리 개발로 인한 <b>기능 격차 발생</b>
-        - 웹뷰 위주 개발로 웹 제품 스펙 불일치 심화
+        - 소상공인을 위한 광고주센터는 기존에 <b>웹, 웹뷰가 따로 개발되고 관리</b>되고 있었어요.
+        - 상대적으로 웹뷰의 유저가 많아서 새로운 기능들은 웹뷰 우선적으로 개발이 되고 있었고, <b>웹 제품을 그에 비해서 뒤쳐지고 있었고, 스펙 싱크가 안맞는 부분들이 많이 생기기 시작</b>했어요.
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">접근</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 웹/웹뷰 클라이언트 <b>코드 통합</b>
-        - 모바일 퍼스트 디자인 + 반응형 디자인 적용
-        - 플랫폼별 로직 차이는 선택적 코드 분리
+        - 스펙 격차가 생기는 문제를 해결하기 위해서 <b>웹, 웹뷰의 클라이언트 코드를 한 벌의 코드로 작성</b>하기로 결정하고 작업을 시작했어요.
+        - 디자인은 모바일 퍼스트로 작업을 진행했고, 그래도 특수한 웹 디자인이 필요한 경우에는 반응형 디자인을 작업했어요.
+        - 로직적으로 웹과 웹뷰의 코드가 차이가 있는 경우에는 두벌의 코드를 만들어서 관리했어요.
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">결과</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 스펙 격차 해소로 웹/웹뷰 동시 개발 환경 구축
-        - 코드베이스 <b>복잡도 증가 및 관리 어려움 발생</b>
-        - 모바일 퍼스트 디자인으로 인한 <b>웹 사용성 저하</b>
-        - 문제 해결을 위한 <b>적절한 설계의 중요성을 깨달음</b>
-        - 언제든지 방향을 수정할 수 있도록 <b>점진적인 변경을 실행하는 것이 중요함</b>을 깨달음
+        - 웹, 웹뷰의 코드가 하나가 되었고, 이제 스펙 격차없이 무조건 기능을 개발할 때 웹뷰, 웹 기능을 동시에 개발했어요.
+        - 한 코드에 <b>반응형 디자인과 런타임별로 다른 로직을 구현함으로써 코드베이스가 비대해지고 복잡</b>해져서 관리가 어려워졌어요.
+        - 웹의 좋은 사용자 경험과 웹뷰의 좋은 사용자 경험이 확연이 다른데도 불구하고 <b>모바일 퍼스트로 디자인하고 웹의 사용성을 떨어트리는 경우가 많아졌어요.</b>
+        - 결론적으로 하나의 코드 베이스에서 관리한다고 치더라도 <b>결국에는 두벌이 되어야하는 코드들이 존재</b>하기도 하고, 각 플랫폼의 사용성에 <b>최적화된 경험을 제공하기 위해서는 분리되어야하는 부분도 있다는 사실</b>을 절실하게 깨달았어요.
+        - 기존에 인식했던 문제를 단순히 하나의 코드베이스로 합치는 방향성이 아니라 프로젝트 관리 방식의 변경이나 공통로직 패키지 도입 등 다른 방식으로도 풀 수 있었을 거라는 아쉬움이 있었어요. <b>배경과 문제에 대한 깊은 이해를 바탕으로 가장 적절한 솔루션을 잘 디자인하는 것이 가장 중요하다는 사실</b>을 다시 한 번 배울 수 있었어요.
       </div>
     </div>
   </div>
@@ -170,21 +171,22 @@ github: https://github.com/seonghyeonkimm
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">배경</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 깊은 퍼널로 인한 <b>낮은 전환율 문제</b>
+        - 소상공인향 광고주센터 웹뷰 서비스에서 광고 생성을 할 때 설정해야하는 값들이 많았고, 그에 따라 <b>퍼널이 깊어서 특정 퍼널의 전환율이 좋지가 않음을 관찰</b>했어요.
+        - 광고를 생성하는 것이 광고 매출로 가는 첫 단추였기 때문에 이 문제를 어떻게 개선할 수 있을까 팀 내에서 고민을 하고 있었어요.
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">접근</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 퍼널을 <b>원페이지로 통합</b>하여 광고 생성 기능 개발
-        - 필수 기능 중심 노출, 커스텀 기능 후순위 배치
+        - 여러가지 깊었던 퍼널을 혁신적으로 <b>원페이지로 줄여서 광고 생성 기능을 제공하는 방향으로 개발을 진행</b>했어요.
+        - 광고 생성에 필요한 필수 기능만 원페이지로 구성해서 노출하고 구체적으로 커스텀할 수 있는 기능들은 조금 더 뒷단에 숨겨두는 형태로 최대한 퍼널을 간소화했어요.
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">결과</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 예상과 달리 기존 퍼널보다 <b>낮은 생성율 기록</b>
-        - 퍼널 깊이보다 <b>정보 전달의 명확성이 더 중요</b>하다는 교훈을 얻음
+        - 당연히 기존 퍼널보다 <b>생성율이 더 좋아질 것이라고 직감적으로 생각</b>하고 있었지만, 결과적으로는 기존 퍼널보다 <b>생성율이 더 낮았어요.</b>
+        - 항상 퍼널을 줄이는 것이 좋은 결과로 이어진다고 생각해왔었는데, 결과적으로 그렇지 않을 수 있다는 점을 배웠어요. <b>퍼널의 깊이보다 하나의 퍼널 혹은 페이지에서 유저가 알아야하는 정보를 간편하게 전달하고 유도하는 것이 더 중요하다는 사실</b>을 배웠어요.
       </div>
     </div>
   </div>
@@ -223,24 +225,24 @@ github: https://github.com/seonghyeonkimm
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">배경</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 새로운 매출원 탐색 필요성
-        - 내부 트래픽 활용한 B2B 커머스 프로젝트 시작
+        - 한국신용데이터 회사 내부적으로 다른 매출원을 찾고 있었어요.
+        - 사업장에 물품을 판매하는 회사를 인수하면서 <b>내부 트래픽을 활용해서 사업장들에게 제품들을 판매할 수 있는 커머스 개발 프로젝트가 시작</b>되었어요.
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">접근</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 2명 체제로 커머스 웹뷰와 어드민 개발
-        - <b>Server Driven UI를 통한 유연한 운영 환경</b> 구축
+        - 2명의 인원으로 <b>대고객용 커머스 웹뷰와 대판매자용 어드민을 작업하기 시작</b>했어요.
+        - 홈 화면의 경우 <b>Server Driven UI 형태로 구현하여 운영하는 인력이 기획전이나 카탈로그를 자유롭게 운영</b>할 수 있도록 개발했어요.
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">결과</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 지속적인 매출 상승 및 <b>새로운 비즈니스 모델 창출</b>
-        - MVP 기반 점진적 기능 개발
-        - NextJs 렌더링 방식 이해도 향상
-        - AWS Infra 구축 경험 (ECS, Fargate)
+        - 지속적으로 매출이 상승했고, 캐시노트 입장에서는 <b>구독 요금 이외의 새로운 비즈니스 모델</b>을 만들어낼 수 있었어요.
+        - MVP를 잘 정의했고, 너무 많은 기능을 한번에 다 넣기보다 <b>점진적으로 기능 개발을 했고 추가</b>했어요.
+        - 개발 차원에서는 NextJs를 본격적으로 많이 써보면서 <b>렌더링 방식에 대한 이해도를 높일 수</b> 있었어요.
+        - NextJs를 Vercel이 아닌 내부 Infra를 구성해서 운영했어요. <b>AWS Infra 관련 지식을 늘릴 수 있는 기회</b>였어요. (ECS, Fargate 등)
       </div>
     </div>
   </div>
@@ -278,21 +280,21 @@ github: https://github.com/seonghyeonkimm
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">배경</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 기존 물류 어드민의 사용성 개선 요구
-        - 대량 Input 폼으로 인한 퍼포먼스 저하 문제
+        - 기존에 만들어져있던 물류 어드민 사용이 불편해서 개선이 필요하다는 요청들이 많이 있었어요.
+        - 물류/재고 서비스들은 <b>수 많은 Input이 있는 폼을 다루어야했고, 그로 인해서 퍼포먼스 문제가 발생</b>하고 있었어요.
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">접근</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 퍼포먼스 최적화를 통한 대량 Input 처리
-        - 100개 이상 Row 처리를 위한 UX 개선 (Shift+Click 등)
+        - <b>많은 Input이 있는 상황</b>에서도 <b>어드민이 느려지지 않고 작동이 되도록 퍼포먼스를 챙기면서 작업</b>했어요.
+        - 데이터 Row 수가 100개가 넘는 것들을 다루어야하는 경우가 많이 있었어요. 예를 들어 Shift + Click을 통해서 <b>여러 Row을 한번에 선택하기 쉽게 도와주는 기능</b> 등을 고려하면서 작업했어요.
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">결과</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 대량 Input 처리에 대한 기술적 도전과 학습 기회 획득
+        - React로 웹앱을 개발하면서 <b>많은 Input을 다루는 일이 처음</b>이었고 이런 문제를 어떻게 대응할 수 있는지에 대해서 <b>고민하고 배울 수 있는 기회</b>였어요.
       </div>
     </div>
   </div>
@@ -329,21 +331,21 @@ github: https://github.com/seonghyeonkimm
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">배경</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 빠른 실험을 위한 검색 기능의 네이티브 앱 분리 필요
+        - 빠른 실험과 개선이 필요한 검색 기능을 <b>네이티브 앱에서 분리하여 유연성 확보가 필요</b>했어요.
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">접근</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 네이티브 앱과의 브릿지 통신 구현
-        - 웹뷰 기반 검색 서비스로 빠른 배포와 A/B 테스트 환경 구축
+        - 네이티브 앱과의 브릿지 통신을 구현했어요.
+        - 웹뷰 기반 검색 서비스를 개발하여 <b>빠른 배포와 A/B 테스트를 가능</b>하게 했어요.
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">결과</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 웹뷰 개발 경험
-        - 독립적인 배포 및 자유로운 실험 환경 구축
+        - <b>웹뷰 개발에 대한 경험</b>을 처음해볼 수 있었어요.
+        - 네이티브앱 배포와는 별개로 <b>기능을 배포할 수 있었고 자주 실험을 진행할 수 있는 환경</b>을 만들었어요.
       </div>
     </div>
   </div>
@@ -355,23 +357,23 @@ github: https://github.com/seonghyeonkimm
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">배경</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 스토어 메인 홈 디자인 개편 필요성
-        - jQuery에서 React로의 기술 스택 전환 필요
+        - 스타일쉐어 스토어 메인 홈 디자인 개편이 필요하다는 논의가 진행되었어요.
+        - jQuery로 구현되어있던 코드라 React를 사용해서 리뉴얼하는게 좋겠다는 논의가 있었어요.
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">접근</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - 새로운 디자인과 완전히 새로운 코드 베이스로 리뉴얼 결정
-        - 점진적인 리뉴얼을 위해 <b>특정 route만 갈아끼울 수 있는 infra</b>를 구축 (Load Balancer → NextJs or  Flask Server)
+        - 새로운 디자인과 완전히 새로운 코드 베이스로 해당 페이지를 리뉴얼하기로 결정했어요.
+        - 한번에 모든 페이지를 개발할 수 없었기에 점진적으로 리뉴얼 하기 위해서 <b>특정 route만 갈아끼울 수 있도록 고려하면서 infra를 구축하고 한 페이지씩 점진적으로 작업</b>했어요. (Load Balancer → NextJs or  Flask Server)
       </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">결과</div>
       <div className="text-base text-gray-700 dark:text-gray-300">
-        - <b>점진적으로 마이그레이션을 할 수 있는 출발점</b> 구축
-        - 3명의 FE와 협업 경험을 통해 혼자하는 작업과 여러 동료와 같이 작업할 때의 다른 점들을 깨달음
-        - <b>본인의 구현을 세심하게 체크할 줄 아는 사람</b>이 <b>협업하기 좋은 동료라는 생각</b>
+        - 큰 리소스를 들이지 않고 <b>점진적으로 마이그레이션을 할 수 있는 출발점</b>을 만들었어요.
+        - 보통 혼자서 하나의 프로젝트를 작업하다가 하나의 프로젝트를 3명의 FE가 같이 해본 작업이었어요. 혼자하는 작업과 <b>여러 동료와 같이 작업하면서 겪는 문제들을 통해서 여러움과 교훈</b>들이 있었어요.
+        - 프론트엔드 개발자는 <b>본인의 구현을 세심하게 체크할 줄 아는 사람</b>이 <b>협업하기 좋은 동료라는 생각</b>을 하게 되었어요.
       </div>
     </div>
   </div>
