@@ -9,285 +9,380 @@ linkedin: https://www.linkedin.com/in/seonghyeon-kim-328757b7/
 github: https://github.com/seonghyeonkimm
 ---
 
-## Introduction
+<h5 className="text-2xl font-bold mt-4">Intro</h5>
 
-I primarily develop using TypeScript, React, and Node.js. While I enjoy learning new technologies, I strive to learn and use technologies that are appropriate for solving defined problems.
+I primarily develop using TypeScript, React, and Node.js. While I enjoy learning new technologies, I <b>strive to learn and use technologies that are appropriate for solving defined problems</b>.
 
-I prefer working under well-designed problems and hypotheses. I hope to build value within a cycle of data-driven hypothesis validation, success, and failure.
+I <b>prefer working under designed problems and hypotheses</b>. I hope to grow value within the cycle of validating hypotheses based on data and experiencing both success and failure.
+Even if not grandiose, I ultimately want to create good value for the world and <b>live a life sharing bright and positive energy</b>.
 
-Ultimately, I want to live a life that creates good value in the world and shares positive energy, even if it's not grandiose.
+<h5 className="text-2xl font-bold mt-8">Experiences</h5>
 
----
-
-## Experiences
-
-### Karrot <span className="text-sm font-normal text-gray-500 ml-2">Sep 2022 ~ Present</span>
+<h5 className="text-xl font-bold mt-6 mb-2">Karrot <span className="text-sm font-normal text-gray-500 ml-2">Sep 2022 ~ Present</span></h5>
 
 <div className="py-2 flex text-base border-t">
-  <div className="font-semibold basis-28 text-gray-600">Role</div>
+  <div className="font-semibold basis-24 text-gray-600">Position</div>
   <div className="flex-1">
     <div>Software Engineer, Frontend (Sep 2022 ~ Jan 2024)</div>
-    <div>Lead Software Engineer, Frontend (Jan 2024 ~ Present)</div>
+    <div>(Lead) Software Engineer, Frontend (Jan 2024 ~ Present)</div>
   </div>
 </div>
 <div className="py-2 flex text-base border-t">
-  <div className="font-semibold basis-28 text-gray-600">Projects</div>
-  <div className="flex-1">Small Business Advertiser Center, Professional Advertiser Center, Ad SDK, BFF</div>
+  <div className="font-semibold basis-24 text-gray-600">Products</div>
+  <div className="flex-1">Small Business Ads Center, Professional Ads Center, Ads SDK, BFF</div>
 </div>
 <div className="py-2 flex text-base border-t border-b">
-  <div className="font-semibold basis-28 text-gray-600">Tech Stack</div>
+  <div className="font-semibold basis-24 text-gray-600">Tech Stack</div>
   <div className="flex-1">typescript, react, relay, react-query, vanilla-extract, tailwindcss, node.js, fastify, graphql</div>
 </div>
 
-#### Responsibilities
+<h5 className="text-xl font-bold mt-5">Responsibilities</h5>
 
-Leading frontend development for Karrot's advertising platform, building advertising solutions for diverse customers from small businesses to professional advertisers. Participated in the entire process from initial product design to operations, responsible for establishing team technical standards and building infrastructure to improve development productivity.
+I'm leading frontend development for Karrot's advertising platform.
+I'm responsible for building advertising solutions for diverse customer segments from small businesses to professional advertisers.
+I participate in the entire process from initial product design to operations, and continuously work on establishing team technical standards and improving development productivity.
 
-#### Key Projects
+
+<div className="print:break-after-page" />
+
+<h5 className="text-xl font-bold">Key Projects</h5>
 
 <div className="mt-4">
 
-<div className="mb-6 border-l-2 border-gray-300 pl-4 print:break-inside-avoid">
-  <h5 className="text-lg font-bold mb-3">Small Business Advertiser Center - Web/WebView Integration</h5>
+<div className="mb-8">
+  <h5 className="text-lg font-bold mb-3">[BFF Error Logging and Alert Configuration Improvement]</h5>
   <div className="space-y-3">
     <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Context</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Duplicate work occurring during feature development due to separate web and webview codebases (2x development time)</div>
+      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Background</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - The GraphQL server was only counting cases with status 500 and sending alerts when exceeding a threshold.
+        - Some communicating servers were responding with 400-level errors as 500-level errors.
+        - <b>Alerts inevitably occurred as traffic increased</b>, and the team <b>didn't take error alerts seriously</b>.
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Approach</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Established a 3-month phased integration strategy, extracted common components, and introduced Relay + BFF architecture. Standardized webview bridge interfaces to ensure consistency across platforms.</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - <b>Collected cases where servers returned 400-level errors as 500-level errors and requested improvements</b> from the server team.
+        - <b>Error logs should converge to zero</b>, and <b>reviewed alert settings to check if warnings spike significantly above recent trends</b>.
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Result</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">40% improvement in development speed, 50% reduction in deployment time, 70% code reuse achieved</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - <b>Increased reliability of BFF-related error alerts</b> sent to Slack.
+        - Systematically established criteria for viewing and managing errors at each level.
+        - Learned once again that <b>unreliable error alerts are worse than having no error alerts</b>.
+      </div>
     </div>
   </div>
 </div>
 
-<div className="mb-6 border-l-2 border-gray-300 pl-4 print:break-inside-avoid">
-  <h5 className="text-lg font-bold mb-3">Professional Advertiser Center - Custom Targeting System</h5>
+<div className="mb-8">
+  <h5 className="text-lg font-bold mb-3">[Lead Form Ad Product Addition]</h5>
   <div className="space-y-3">
     <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Context</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Need to meet advertisers' precise targeting needs and improve lead acquisition efficiency</div>
+      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Background</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - Advertisers were <b>using outlink ads to collect customer information</b>.
+        - <b>Users had to manually re-enter information already known by Karrot app</b> when submitting customer information through outlinks.
+        - This situation was <b>negatively affecting ad conversion rates</b>.
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Approach</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Developed custom targeting features to precisely target or exclude specific audiences. Added lead form ad products to help advertisers acquire more customer leads.</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - <b>Developed a new ad product called lead forms</b> that can collect customer information with prefilled data from Karrot's internal information.
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Result</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Improved targeting accuracy, increased ad conversion rate</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - Advertisers can now use lead forms instead of outlinks for customer information collection.
+        - <b>Lead form ads recorded better conversion rates compared to existing outlink ads</b>.
+        - <b>Considered how to manage code to maintain cohesion of funnel-related code</b>, and wrote code using and referencing the use-funnel library.
+      </div>
     </div>
   </div>
 </div>
 
-<div className="mb-6 border-l-2 border-gray-300 pl-4 print:break-inside-avoid">
-  <h5 className="text-lg font-bold mb-3">Ad SDK - Internal Service Integration Platform</h5>
+<div className="mb-8">
+  <h5 className="text-lg font-bold mb-3">[AI-based Ad Analysis Feature Development]</h5>
   <div className="space-y-3">
     <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Context</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Complexity in integrating ad features across various services within the Karrot app</div>
+      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Background</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - Advertisers were <b>entering budgets too small</b> to even get bidding opportunities and <b>couldn't spend their budgets</b>.
+        - Even when providing <b>configuration and performance information</b>, <b>small business advertisers found it difficult to analyze</b>.
+        - There were internal discussions about whether AI could provide creative and diverse answers.
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Approach</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Developed an SDK for easy ad integration in internal app services. Built shared React components and Hooks libraries to lead development standardization.</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - <b>Developed features to analyze configuration values and performance metrics according to AI and internally defined rules</b>.
+        - Worked on writing and improving prompts to provide the most helpful answers to users when using AI.
+        - Rather than just passing prompts to AI, <b>utilized information from top advertisers in the same industry to provide performance analysis in the most effective direction on the platform</b>.
+        - <b>Designed UX to make it as easy as possible to apply recommended actions</b> from performance analysis.
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Result</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">80% reduction in ad integration time, ensured code consistency</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - Achieved improvements in <b>preventing small budget inputs that cause budget underspending by encouraging application of recommended actions</b> through performance analysis.
+        - <b>Gained opportunities to learn prompt writing know-how</b> while participating in prompt creation.
+        - Since server responses came asynchronously, worked on solving this with UX, and <b>strived to create optimal UX by properly handling loading and notifications</b>.
+      </div>
     </div>
   </div>
 </div>
 
-<div className="mb-6 border-l-2 border-gray-300 pl-4 print:break-inside-avoid">
-  <h5 className="text-lg font-bold mb-3">BFF (Backend for Frontend) - Client Optimization Layer</h5>
+<div className="mb-8">
+  <h5 className="text-lg font-bold mb-3">[Small Business Ads Center Web and WebView Integration Project]</h5>
   <div className="space-y-3">
     <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Context</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Mismatch between server APIs and client requirements, and performance issues</div>
+      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Background</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - The ads center for small businesses was previously <b>developed and managed separately for web and webview</b>.
+        - With relatively more webview users, new features were developed primarily for webview, <b>leaving the web product behind and creating spec mismatches</b>.
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Approach</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Designed client-optimized schemas and implemented GraphQL Query/Mutations. Optimized API calls through Cache and Batch processing using DataLoader.</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - To solve the spec gap problem, decided to <b>write web and webview client code as a single codebase</b>.
+        - Worked with mobile-first design, and created responsive designs when special web designs were needed.
+        - When logic differed between web and webview, managed two sets of code.
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Result</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">60% improvement in API response time, 50% reduction in network requests</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - Web and webview code became unified, and features were developed simultaneously for both platforms thereafter.
+        - The codebase became <b>bloated and complex by implementing responsive design and different runtime logic in one code</b>, making management difficult.
+        - <b>Often compromised web usability by designing mobile-first</b> despite clear differences in good user experience between web and webview.
+        - Realized that even when managed in one codebase, <b>some code inevitably needs to be duplicated</b>, and <b>some parts need to be separated to provide optimized experiences for each platform</b>.
+        - Regretted that the originally identified problem could have been solved differently through project management changes or common logic packages rather than simply merging into one codebase. <b>Learned again that designing appropriate solutions based on deep understanding of background and problems is most important</b>.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div className="mb-8">
+  <h5 className="text-lg font-bold mb-3">[Ad Creation Funnel Conversion Rate Improvement Experiment]</h5>
+  <div className="space-y-3">
+    <div>
+      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Background</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - There were many values to configure when creating ads in the small business ads center webview service, resulting in <b>deep funnels with poor conversion rates at certain stages</b>.
+        - Since ad creation was the first step toward ad revenue, the team was considering how to improve this problem.
+      </div>
+    </div>
+    <div>
+      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Approach</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - <b>Developed an innovative one-page ad creation feature</b> that dramatically reduced the previously deep funnel.
+        - Composed the one-page with only essential features for ad creation and simplified the funnel by hiding detailed customization features in the back.
+      </div>
+    </div>
+    <div>
+      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Result</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - While <b>intuitively expecting better creation rates</b> than the existing funnel, the result was actually <b>lower creation rates</b>.
+        - Learned that reducing funnels doesn't always lead to better results. <b>Learned that delivering information users need to know and inducing actions is more important than funnel depth</b>.
+      </div>
     </div>
   </div>
 </div>
 
 </div>
 
+<div className="print:break-after-page" />
 
-### Korea Credit Data <span className="text-sm font-normal text-gray-500 ml-2">Jan 2021 ~ Sep 2022</span>
+<h5 className="text-xl font-bold mt-10 mb-2">Korea Credit Data <span className="text-sm font-normal text-gray-500 ml-2">Jan 2021 ~ Sep 2022</span></h5>
 
 <div className="py-2 flex text-base border-t">
-  <div className="font-semibold basis-28 text-gray-600">Role</div>
+  <div className="font-semibold basis-24 text-gray-600">Position</div>
   <div className="flex-1">Product Engineer</div>
 </div>
 <div className="py-2 flex text-base border-t">
-  <div className="font-semibold basis-28 text-gray-600">Projects</div>
-  <div className="flex-1">MMP Internal Shared Library, CashNote Market, CashNote Market Partner Center, Credit Score Inquiry, CashNote 2.0</div>
+  <div className="font-semibold basis-24 text-gray-600">Products</div>
+  <div className="flex-1">CashNote, CashNote Market, CashNote Market Partner Center, MMP SDK</div>
 </div>
 <div className="py-2 flex text-base border-t border-b">
-  <div className="font-semibold basis-28 text-gray-600">Tech Stack</div>
+  <div className="font-semibold basis-24 text-gray-600">Tech Stack</div>
   <div className="flex-1">typescript, react, next.js, tailwind, react-query, react-hook-form, react-testing-library, msw, jest, storybook, graphql, apollo-client</div>
 </div>
 
-#### Key Projects
+<h5 className="text-xl font-bold mt-5">Responsibilities</h5>
+
+Worked as a Product Engineer at Korea Credit Data, developing features for the CashNote service.
+For CashNote Market service, I was responsible for service design and overall frontend development.
+
+<h5 className="text-xl font-bold">Key Projects</h5>
 
 <div className="mt-4">
 
-<div className="mb-6 border-l-2 border-gray-300 pl-4 print:break-inside-avoid">
-  <h5 className="text-lg font-bold mb-3">MMP (Marketing Management Platform) Internal Shared Library</h5>
+<div className="mb-8">
+  <h5 className="text-lg font-bold mb-3">[CashNote Market Development]</h5>
   <div className="space-y-3">
     <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Context</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Inefficiency of repeatedly writing data fetching logic and components whenever using materials registered in MMP project</div>
+      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Background</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - Korea Credit Data was internally looking for other revenue sources.
+        - <b>A commerce development project was initiated to sell products to businesses using internal traffic</b>.
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Approach</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Developed and deployed an internal shared library to npm. Built a system that automatically generates UI forms for material render_types based on JSON schemas. Focused on API design and documentation considering user convenience.</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - Started working on <b>customer-facing commerce webview and seller admin with 2 people</b>.
+        - Developed the home screen with <b>Server Driven UI to allow operations staff to freely manage special exhibitions and catalogs</b>.
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Result</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">70% reduction in development time, eliminated code duplication, improved team-wide productivity</div>
-    </div>
-  </div>
-</div>
-
-<div className="mb-6 border-l-2 border-gray-300 pl-4 print:break-inside-avoid">
-  <h5 className="text-lg font-bold mb-3">CashNote Market</h5>
-  <div className="space-y-3">
-    <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Context</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Need to build a marketplace service for business owners using CashNote</div>
-    </div>
-    <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Approach</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Provided optimal user experience by appropriately using Next.js SSR, SSG, and ISR. Built infrastructure using AWS ECS, Fargate, ALB, and CloudFront. Ensured type safety with OpenAPI specification and wrote integration tests with Storybook and MSW. Established data-driven decision-making system using Segment and Amplitude.</div>
-    </div>
-    <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Result</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">50% improvement in page loading speed, 30% increase in user retention time, established data-driven feature improvement process</div>
-    </div>
-  </div>
-</div>
-
-<div className="mb-6 border-l-2 border-gray-300 pl-4 print:break-inside-avoid">
-  <h5 className="text-lg font-bold mb-3">CashNote Credit Score Inquiry</h5>
-  <div className="space-y-3">
-    <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Context</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Business owners needed to check credit scores when using financial services</div>
-    </div>
-    <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Approach</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Implemented credit score inquiry feature through KCB API integration. Directly implemented graphs to visualize scores using SVG.</div>
-    </div>
-    <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Result</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Launched credit score inquiry feature, 20% improvement in financial service conversion rate</div>
-    </div>
-  </div>
-</div>
-
-<div className="mb-6 border-l-2 border-gray-300 pl-4 print:break-inside-avoid">
-  <h5 className="text-lg font-bold mb-3">CashNote 2.0</h5>
-  <div className="space-y-3">
-    <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Context</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Increased complexity from service growth leading to slower development speed, need for overall UX improvement</div>
-    </div>
-    <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Approach</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Separated concerns using React Experimental version's Suspense and Error Boundary. Improved performance through code splitting and data fetching optimization. Implemented responsive design considering mobile interfaces.</div>
-    </div>
-    <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Result</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">40% improvement in initial loading speed, enhanced code maintainability, 50% increase in development productivity</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - Revenue continuously increased, and CashNote was able to <b>create a new business model beyond subscription fees</b>.
+        - Defined MVP well and <b>progressively developed and added features</b> rather than implementing everything at once.
+        - Gained <b>deeper understanding of rendering methods</b> by extensively using Next.js.
+        - Operated Next.js on internal infrastructure rather than Vercel. It was an <b>opportunity to expand AWS infrastructure knowledge</b> (ECS, Fargate, etc.).
+      </div>
     </div>
   </div>
 </div>
 
 </div>
 
+<div className="print:break-after-page" />
 
-### tPay <span className="text-sm font-normal text-gray-500 ml-2">Feb 2020 ~ Jan 2021</span>
+
+<h5 className="text-xl font-bold mt-10 mb-2">Tpay <span className="text-sm font-normal text-gray-500 ml-2">Feb 2020 ~ Jan 2021</span></h5>
 
 <div className="py-2 flex text-base border-t">
-  <div className="font-semibold basis-28 text-gray-600">Role</div>
+  <div className="font-semibold basis-24 text-gray-600">Position</div>
   <div className="flex-1">Frontend Developer</div>
 </div>
 <div className="py-2 flex text-base border-t">
-  <div className="font-semibold basis-28 text-gray-600">Projects</div>
+  <div className="font-semibold basis-24 text-gray-600">Products</div>
   <div className="flex-1">Merchant Management/Contract Admin</div>
 </div>
 <div className="py-2 flex text-base border-t border-b">
-  <div className="font-semibold basis-28 text-gray-600">Tech Stack</div>
+  <div className="font-semibold basis-24 text-gray-600">Tech Stack</div>
   <div className="flex-1">typescript, react, styled-component, swr, react-hook-form</div>
 </div>
 
-#### Key Projects
+<h5 className="text-xl font-bold mt-5">Responsibilities</h5>
+
+Worked as a Frontend Developer at Tpay, developing merchant management admin and contract admin systems.
+
+<h5 className="text-xl font-bold">Key Projects</h5>
 
 <div className="mt-4">
 
-<div className="mb-6 border-l-2 border-gray-300 pl-4 print:break-inside-avoid">
-  <h5 className="text-lg font-bold mb-3">Merchant Management/Contract Admin</h5>
+<div className="mb-8">
+  <h5 className="text-lg font-bold mb-3">[Merchant Management Admin Logistics Part Refactoring]</h5>
   <div className="space-y-3">
     <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Context</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Need for a back-office system to systematize merchant service issue management and contract processes</div>
+      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Background</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - There were requests for improvements due to inconvenient use of the existing logistics admin.
+        - Logistics/inventory services had to <b>handle forms with numerous inputs, causing performance issues</b>.
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Approach</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Efficiently managed complex form states using React Hook Form. Implemented contract stage workflow and built history tracking system.</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - <b>Worked on maintaining performance even with many inputs</b> to ensure the admin didn't slow down.
+        - Had to handle cases with over 100 data rows. Worked considering features like <b>selecting multiple rows at once using Shift + Click</b>.
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Result</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">60% reduction in contract processing time, 50% decrease in issue response time</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - It was my <b>first time handling many inputs</b> while developing web apps with React, and it was an <b>opportunity to think about and learn how to handle such problems</b>.
+      </div>
     </div>
   </div>
 </div>
 
 </div>
 
-### StyleShare <span className="text-sm font-normal text-gray-500 ml-2">Apr 2019 ~ Feb 2020</span>
+<div className="print:break-after-page" />
+
+<h5 className="text-xl font-bold mt-10 mb-2">StyleShare <span className="text-sm font-normal text-gray-500 ml-2">Apr 2019 ~ Feb 2020</span></h5>
 
 <div className="py-2 flex text-base border-t">
-  <div className="font-semibold basis-28 text-gray-600">Role</div>
+  <div className="font-semibold basis-24 text-gray-600">Position</div>
   <div className="flex-1">Frontend Developer</div>
 </div>
 <div className="py-2 flex text-base border-t">
-  <div className="font-semibold basis-28 text-gray-600">Projects</div>
-  <div className="flex-1">In-app Search Service, Web Store Renewal</div>
+  <div className="font-semibold basis-24 text-gray-600">Products</div>
+  <div className="flex-1">StyleShare Web, StyleShare Search WebView</div>
 </div>
 <div className="py-2 flex text-base border-t border-b">
-  <div className="font-semibold basis-28 text-gray-600">Tech Stack</div>
+  <div className="font-semibold basis-24 text-gray-600">Tech Stack</div>
   <div className="flex-1">typescript, react, next.js, styled-component</div>
 </div>
 
-#### Key Projects
+<h5 className="text-xl font-bold mt-5">Responsibilities</h5>
+
+Worked as a Frontend Developer at StyleShare, responsible for developing StyleShare web and StyleShare search webview.
+
+<h5 className="text-xl font-bold">Key Projects</h5>
 
 <div className="mt-4">
 
-<div className="mb-6 border-l-2 border-gray-300 pl-4 print:break-inside-avoid">
-  <h5 className="text-lg font-bold mb-3">In-app Search Service</h5>
+<div className="mb-8">
+  <h5 className="text-lg font-bold mb-3">[StyleShare Search WebView]</h5>
   <div className="space-y-3">
     <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Context</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Need to separate search functionality from native app for flexibility in rapid experimentation and improvements</div>
+      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Background</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - <b>Needed to separate search functionality from the native app for flexibility</b> in rapid experimentation and improvement.
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Approach</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Developed webview-based search service enabling quick deployment and A/B testing. Implemented bridge communication with native app.</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - Implemented bridge communication with native app.
+        - Developed webview-based search service to <b>enable quick deployment and A/B testing</b>.
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Result</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Deployment cycle reduced from 5 days to immediate deployment, 25% improvement in search conversion rate</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - Gained my <b>first experience with webview development</b>.
+        - Created an <b>environment for frequent experimentation with feature deployment independent of native app releases</b>.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div className="mb-8">
+  <h5 className="text-lg font-bold mb-3">[Web Store Renewal]</h5>
+  <div className="space-y-3">
+    <div>
+      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Background</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - Discussions were underway for redesigning the StyleShare store main home.
+        - There were discussions about renewing with React instead of the jQuery-implemented code.
+      </div>
+    </div>
+    <div>
+      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Approach</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - Decided to renew the page with new design and completely new codebase.
+        - Since we couldn't develop all pages at once, <b>built infrastructure considering gradual renewal by replacing specific routes and worked progressively one page at a time</b>. (Load Balancer → NextJs or Flask Server)
+      </div>
+    </div>
+    <div>
+      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Result</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - Created a <b>starting point for gradual migration without significant resources</b>.
+        - It was my first project working with 3 FE developers after working alone. There were <b>lessons learned from problems encountered while collaborating with colleagues</b>.
+        - Came to think that <b>frontend developers who can meticulously check their own implementations</b> are <b>good colleagues to collaborate with</b>.
+      </div>
     </div>
   </div>
 </div>
@@ -295,96 +390,109 @@ Leading frontend development for Karrot's advertising platform, building adverti
 </div>
 
 
-### Apartmentary <span className="text-sm font-normal text-gray-500 ml-2">Sep 2017 ~ Dec 2018</span>
+<h5 className="text-xl font-bold mt-10 mb-2">Apartmentary <span className="text-sm font-normal text-gray-500 ml-2">Sep 2017 ~ Dec 2018</span></h5>
 
 <div className="py-2 flex text-base border-t">
-  <div className="font-semibold basis-28 text-gray-600">Role</div>
+  <div className="font-semibold basis-24 text-gray-600">Position</div>
   <div className="flex-1">Software Engineer</div>
 </div>
 <div className="py-2 flex text-base border-t">
-  <div className="font-semibold basis-28 text-gray-600">Projects</div>
-  <div className="flex-1">Landing Page, Back Office for Construction and Commerce, Product Information Crawling Chrome Extension, Interior Product Commerce</div>
+  <div className="font-semibold basis-24 text-gray-600">Products</div>
+  <div className="flex-1">Landing Page, Commerce Web, Commerce Back Office, Product Information Crawling Chrome Extension</div>
 </div>
 <div className="py-2 flex text-base border-t border-b">
-  <div className="font-semibold basis-28 text-gray-600">Tech Stack</div>
+  <div className="font-semibold basis-24 text-gray-600">Tech Stack</div>
   <div className="flex-1">javascript, react, redux, nodejs, express, mongodb</div>
 </div>
 
-#### Key Projects
+<h5 className="text-xl font-bold mt-5">Responsibilities</h5>
+
+Worked as a Software Engineer at Apartmentary, responsible for developing commerce web, commerce back office, and product information crawling Chrome extension.
+
+<h5 className="text-xl font-bold">Key Projects</h5>
 
 <div className="mt-4">
 
-<div className="mb-6 border-l-2 border-gray-300 pl-4 print:break-inside-avoid">
-  <h5 className="text-lg font-bold mb-3">Product Information Crawling Chrome Extension</h5>
+<div className="mb-8">
+  <h5 className="text-lg font-bold mb-3">[Product Information Crawling Chrome Extension]</h5>
   <div className="space-y-3">
     <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Context</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Inefficient process of manually entering product information from other brands needed improvement</div>
+      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Background</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - There was a <b>need to sell third-party products internally as a closed mall</b>.
+        - While we could implement commerce features internally, <b>product registration processes were essential</b>.
+        - We couldn't get API integration or CSV data sharing support, and <b>partners told us to directly copy content from their websites without additional support</b>.
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Approach</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Developed an automatic product information crawling tool using Chrome Extension API. Automatically extracted and formatted product information by analyzing web page DOM.</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - Developed a Chrome extension that activates on partner product detail pages, adding functionality to crawl information from websites with one click to populate our DB.
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Result</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">90% reduction in product registration time, improved data entry accuracy</div>
-    </div>
-  </div>
-</div>
-
-<div className="mb-6 border-l-2 border-gray-300 pl-4 print:break-inside-avoid">
-  <h5 className="text-lg font-bold mb-3">Interior Product Commerce</h5>
-  <div className="space-y-3">
-    <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Context</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Need to build a commerce platform exclusive to interior construction customers</div>
-    </div>
-    <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Approach</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Developed commerce platform using React and Redux. Integrated payment system through iamport and built order management system.</div>
-    </div>
-    <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Result</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Successfully launched commerce platform, achieved monthly transaction volume of 200 million KRW</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - Operations staff no longer needed to manually record information, creating a <b>process for quickly registering products</b> using the Chrome extension with minimal modifications.
+        - The closed mall didn't succeed business-wise, so the project wasn't maintained long-term. <b>Should have checked business viability through gradual development and deployment</b>.
+        - Gained experience in Chrome extension development, which was an <b>opportunity to broaden the diversity of problem-solving approaches</b>.
+        - A limitation was that while initial DB loading was possible, I didn't consider <b>continuously syncing changing product information</b>.
+      </div>
     </div>
   </div>
 </div>
 
 </div>
 
-### Spoqa <span className="text-sm font-normal text-gray-500 ml-2">Dec 2015 ~ Aug 2017</span>
+<h5 className="text-xl font-bold mt-10 mb-2">Spoqa <span className="text-sm font-normal text-gray-500 ml-2">Dec 2015 ~ Aug 2017</span></h5>
 
 <div className="py-2 flex text-base border-t">
-  <div className="font-semibold basis-28 text-gray-600">Role</div>
+  <div className="font-semibold basis-24 text-gray-600">Position</div>
   <div className="flex-1">Brand Success Manager, Business Intelligence Developer</div>
 </div>
 <div className="py-2 flex text-base border-t">
-  <div className="font-semibold basis-28 text-gray-600">Projects</div>
-  <div className="flex-1">Company-wide Data Dashboard Configuration, Contract Service Development, Query Writing for Data Extraction</div>
+  <div className="font-semibold basis-24 text-gray-600">Products</div>
+  <div className="flex-1">Company-wide Data Dashboard Configuration</div>
 </div>
 <div className="py-2 flex text-base border-t border-b">
-  <div className="font-semibold basis-28 text-gray-600">Tech Stack</div>
+  <div className="font-semibold basis-24 text-gray-600">Tech Stack</div>
   <div className="flex-1">python, flask, sql</div>
 </div>
 
-#### Key Projects
+<h5 className="text-xl font-bold mt-5">Responsibilities</h5>
+
+Worked as Brand Success Manager and Business Intelligence Developer at Spoqa, building a data-driven decision-making system.
+
+<h5 className="text-xl font-bold">Key Projects</h5>
 
 <div className="mt-4">
 
-<div className="mb-6 border-l-2 border-gray-300 pl-4 print:break-inside-avoid">
-  <h5 className="text-lg font-bold mb-3">Company-wide Data Dashboard Configuration</h5>
+<div className="mb-8">
+  <h5 className="text-lg font-bold mb-3">[Company-wide Dashboard Creation]</h5>
   <div className="space-y-3">
     <div>
-      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Context</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Need for an integrated dashboard to check service metrics in real-time across the company</div>
+      <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Background</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - <b>Decision-making based on intuition or experience was becoming a bottleneck for good decisions</b>.
+        - The importance of data visibility across all job functions emerged.
+        - Non-tech roles had the <b>problem of needing to go through developers to obtain data</b>.
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Approach</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Built SQL-based data visualization dashboard using Periscope. Defined key business metrics and established real-time monitoring system.</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - Created data dashboards using existing SaaS (Periscope) rather than developing data visualization products directly.
+        - Provided relevant data to all company employees by proactively discovering ideas or responding to colleagues' requests. (SQL, external data source integration)
+      </div>
     </div>
     <div>
       <div className="text-base font-bold text-gray-500 dark:text-gray-400 mb-1">Result</div>
-      <div className="text-base text-gray-700 dark:text-gray-300">Established data-driven decision-making culture, 80% reduction in metric checking time</div>
+      <div className="text-base text-gray-700 dark:text-gray-300">
+        - <b>Internal colleagues gained easy access to basic service metrics</b>.
+        - Regularly shared discovered data insights with executives.
+        - It was a moment of <b>profound realization that data visibility is truly important for good decision-making</b>.
+        - A limitation was <b>failing to expand data visibility and accessibility beyond basic metrics</b> for all job functions as initially intended.
+      </div>
     </div>
   </div>
 </div>
@@ -392,19 +500,21 @@ Leading frontend development for Karrot's advertising platform, building adverti
 </div>
 
 ---
+
+<div className="print:break-after-page" />
 
 ## Communities
 
 ### Presentations
-- [Merging Web/WebView Code Doesn't Make Development 2x Faster? | 2024 Daangn Tech Meetup](https://www.youtube.com/watch?v=a26zrAqAAzo) (Oct 7, 2024)
-- [FEConf 2020: Handling Form State in Complex Back Office](https://www.youtube.com/watch?v=ycxqVYD2N0w) (Oct 31, 2020)
+- [Doesn't merging web/webview code make development twice as fast? | 2024 Karrot Tech Meetup](https://www.youtube.com/watch?v=a26zrAqAAzo) (Oct 7, 2024)
+- [FEConf 2020: Managing Form State in Complex Back Office](https://www.youtube.com/watch?v=ycxqVYD2N0w) (Oct 31, 2020)
 
 ### Lecture
-- [Programmer FE Job Survival Kit](https://programmers.co.kr/learn/courses/12442) (Jul 2021 ~ Aug 2021)
+- [Programmer FE Employment Survival Kit](https://programmers.co.kr/learn/courses/12442) (Jul 2021 ~ Aug 2021)
 
 ---
 
 ## Education
 
 ### Kyung Hee University
-- (Mar 2010 ~ Feb 2016) Business Administration / Korean Language Studies
+- (Mar 2010 ~ Feb 2016) Business Administration / Korean Language and Literature
