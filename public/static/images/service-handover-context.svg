@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 430" width="720" height="430" role="img" aria-label="소비자별 경로와 크리티컬 패스를 표시한 다이어그램">
+  <defs>
+    <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1b45b0"/>
+    </marker>
+    <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#a3adbb"/>
+    </marker>
+    <style>
+      .t    { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif; }
+      .zone { font-size: 11.5px; font-weight: 600; fill: #8792a3; letter-spacing: .04em; }
+      .name { font-size: 14.5px; font-weight: 600; fill: #15181e; }
+      .sub  { font-size: 11.5px; fill: #5b6472; }
+      .key  { font-size: 11.5px; font-weight: 600; fill: #1b45b0; }
+      .edge { font-size: 11.5px; font-weight: 600; fill: #1b45b0; }
+      .lg   { font-size: 12px; fill: #4e5766; }
+      .lgb  { font-size: 12px; font-weight: 600; fill: #15181e; }
+    </style>
+  </defs>
+
+  <rect width="720" height="430" fill="#ffffff"/>
+
+  <text x="30" y="32" class="t zone">소비자</text>
+  <text x="410" y="32" class="t zone">인수받은 서비스</text>
+
+  <!-- 소비자 -->
+  <g>
+    <rect x="30" y="46" width="210" height="70" rx="8" fill="#f4f6f8" stroke="#8792a3" stroke-width="1.3"/>
+    <text x="135" y="74" class="t name" text-anchor="middle">소비자 A</text>
+    <text x="135" y="96" class="t key" text-anchor="middle">전체 요청의 대부분</text>
+  </g>
+  <g>
+    <rect x="30" y="164" width="210" height="70" rx="8" fill="#f4f6f8" stroke="#c2cad4" stroke-width="1.2"/>
+    <text x="135" y="192" class="t name" text-anchor="middle">소비자 B</text>
+    <text x="135" y="214" class="t sub" text-anchor="middle">간헐적 조회</text>
+  </g>
+  <g>
+    <rect x="30" y="282" width="210" height="70" rx="8" fill="#f4f6f8" stroke="#c2cad4" stroke-width="1.2"/>
+    <text x="135" y="310" class="t name" text-anchor="middle">내부 운영자</text>
+    <text x="135" y="332" class="t sub" text-anchor="middle">조회, 수동 작업</text>
+  </g>
+
+  <!-- 서비스 경계 -->
+  <rect x="400" y="42" width="290" height="316" rx="12" fill="none" stroke="#c2cad4" stroke-width="1.3" stroke-dasharray="6 5"/>
+
+  <g>
+    <rect x="428" y="76" width="234" height="82" rx="9" fill="#e7edfb" stroke="#1b45b0" stroke-width="1.6"/>
+    <text x="545" y="112" class="t name" text-anchor="middle">gRPC 서버</text>
+    <text x="545" y="134" class="t sub" text-anchor="middle">수집 요청을 받아요</text>
+  </g>
+  <g>
+    <rect x="428" y="242" width="234" height="82" rx="9" fill="#f4f6f8" stroke="#a3adbb" stroke-width="1.3"/>
+    <text x="545" y="278" class="t name" text-anchor="middle">HTTP 서버</text>
+    <text x="545" y="300" class="t sub" text-anchor="middle">조회와 관리 화면</text>
+  </g>
+
+  <!-- 연결 -->
+  <path d="M 240 81 L 424 103" stroke="#1b45b0" stroke-width="2.6" fill="none" marker-end="url(#a1)"/>
+  <text x="300" y="80" class="t edge">크리티컬 패스</text>
+
+  <path d="M 240 199 L 424 138" stroke="#a3adbb" stroke-width="1.3" fill="none" marker-end="url(#a2)"/>
+  <path d="M 240 317 L 424 288" stroke="#a3adbb" stroke-width="1.3" fill="none" marker-end="url(#a2)"/>
+
+  <!-- 범례 -->
+  <line x1="30" y1="382" x2="690" y2="382" stroke="#e5e9ef" stroke-width="1.2"/>
+
+  <line x1="32" y1="404" x2="72" y2="404" stroke="#1b45b0" stroke-width="2.6"/>
+  <text x="82" y="408" class="t lgb">크리티컬 패스</text>
+  <text x="172" y="408" class="t lg">— 막히면 데이터가 쌓이지 않고 밀려요</text>
+
+  <line x1="452" y1="404" x2="492" y2="404" stroke="#a3adbb" stroke-width="1.3"/>
+  <text x="502" y="408" class="t lgb">나머지</text>
+  <text x="556" y="408" class="t lg">— 영향 범위가 좁아요</text>
+</svg>
